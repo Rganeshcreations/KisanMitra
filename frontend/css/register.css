@@ -1,0 +1,57 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+
+  /* background image */
+  background: url("../images/farm-bg.jpg") no-repeat center center/cover;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* register box */
+.register-box {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  width: 320px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.register-box h2 {
+  margin-bottom: 20px;
+  color: #2e7d32;
+}
+
+.register-box input,
+.register-box select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.register-box button {
+  width: 100%;
+  padding: 10px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.register-box button:hover {
+  background-color: #1b5e20;
+}
+
+#message {
+  margin-top: 10px;
+  font-weight: bold;
+}

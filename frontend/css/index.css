@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+
+  background: url("../images/farm-bg.jpg") no-repeat center center/cover;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-box {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  width: 400px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.home-box h1 {
+  color: #2e7d32;
+  margin-bottom: 10px;
+}
+
+.home-box p {
+  color: #555;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+.home-box a {
+  display: block;
+  text-decoration: none;
+  background-color: #2e7d32;
+  color: white;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.home-box a:hover {
+  background-color: #1b5e20;
+}
