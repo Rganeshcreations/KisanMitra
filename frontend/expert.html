@@ -1,20 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Expert Dashboard</title>
-  <link rel="stylesheet" href="css/dashboard.css">
+  <title>Expert Dashboard - KisanMitra</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background:
+        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)),
+        url("images/farmer-bg.jpg");
+      background-size: cover;
+      background-position: center;
+      color: white;
+    }
+
+    .sidebar {
+      width: 240px;
+      height: 100vh;
+      background: #1b5e20;
+      position: fixed;
+      padding-top: 30px;
+    }
+
+    .sidebar h3 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .sidebar button {
+      width: 85%;
+      margin: 12px 15px;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: white;
+      color: #1b5e20;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .content {
+      margin-left: 260px;
+      padding: 30px;
+    }
+
+    .profile {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      text-align: center;
+    }
+
+    .profile img {
+      width: 80px;
+      border-radius: 50%;
+      border: 3px solid white;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="dashboard">
-    <h1>🧑‍🔬 Expert Dashboard</h1>
-    <p>Guide and support farmers</p>
+<div class="sidebar">
+  <h3>👨‍🌾 Expert Panel</h3>
+  <button>View Questions</button>
+  <button>Answer Farmers</button>
+  <button>Upload Advice</button>
+</div>
 
-    <div class="card">✍️ Post Farming Tips</div>
-    <div class="card">💬 Answer Farmer Questions</div>
+<div class="content">
+  <h2>Expert Dashboard</h2>
+</div>
 
-    <a class="logout" href="index.html">Logout</a>
-  </div>
+<div class="profile">
+  <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+  <p id="name"></p>
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  if(user){
+    document.getElementById("name").innerText = user.name;
+  }
+</script>
 
 </body>
 </html>

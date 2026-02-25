@@ -1,21 +1,158 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Farmer Dashboard</title>
-  <link rel="stylesheet" href="css/dashboard.css">
+  <title>Farmer Dashboard - KisanMitra</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        linear-gradient(rgba(34,139,34,0.6), rgba(0,0,0,0.7)),
+        url("images/farmer-bg.jpg");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      height: 100vh;
+      background: rgba(0,100,0,0.95);
+      position: fixed;
+      padding-top: 30px;
+    }
+
+    .sidebar h3 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 20px;
+    }
+
+    .sidebar button {
+      width: 85%;
+      margin: 12px 15px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: white;
+      color: #2e7d32;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .sidebar button:hover {
+      background: #c8e6c9;
+      transform: scale(1.05);
+    }
+
+    /* Content */
+    .content {
+      margin-left: 260px;
+      padding: 30px;
+    }
+
+    .content-box {
+      background: rgba(255,255,255,0.15);
+      padding: 25px;
+      border-radius: 15px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      min-height: 300px;
+    }
+
+    /* Profile */
+    .profile {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      text-align: center;
+    }
+
+    .profile img {
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      border: 3px solid white;
+      cursor: pointer;
+      object-fit: cover;
+      background: white;
+    }
+
+    .profile p {
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+  </style>
 </head>
+
 <body>
 
-  <div class="dashboard">
-    <h1>🌾 Farmer Dashboard</h1>
-    <p>Support for better farming</p>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>🌾 Farmer Panel</h3>
 
-    <div class="card">❓ Ask Farming Questions</div>
-    <div class="card">📘 View Expert Advice</div>
-    <div class="card">🌦 Weather & Crop Tips</div>
-
-    <a class="logout" href="index.html">Logout</a>
+    <button onclick="showSection('crop')">🌱 Crop Data</button>
+    <button onclick="showSection('weather')">☁ Weather</button>
+    <button onclick="showSection('expert')">👨‍🌾 Ask Expert</button>
+    <button onclick="showSection('buy')">🛒 Buy Fertilizers</button>
   </div>
+
+  <!-- Content -->
+  <div class="content">
+    <h2>Welcome to KisanMitra Dashboard 🚜</h2>
+
+    <div class="content-box" id="mainContent">
+      Select an option from the left menu.
+    </div>
+  </div>
+
+  <!-- Profile Section -->
+  <div class="profile">
+    <img id="profileImage"
+         src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+         onclick="showDetails()">
+    <p id="farmerName"></p>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      document.getElementById("farmerName").innerText = user.name;
+
+      // If farmer uploaded image saved in localStorage
+      if (user.photo) {
+        document.getElementById("profileImage").src = user.photo;
+      }
+    }
+
+    function showDetails() {
+      alert("👤 Name: " + user.name + "\nRole: " + user.role);
+    }
+
+    function showSection(section) {
+      const content = document.getElementById("mainContent");
+
+      if (section === "crop") {
+        content.innerHTML = "<h3>🌱 Crop Data Section</h3><p>Crop information will appear here.</p>";
+      }
+      else if (section === "weather") {
+        content.innerHTML = "<h3>☁ Weather Section</h3><p>Weather API integration coming soon.</p>";
+      }
+      else if (section === "expert") {
+        content.innerHTML = "<h3>👨‍🌾 Ask Expert</h3><p>Ask your farming doubts here.</p>";
+      }
+      else if (section === "buy") {
+        content.innerHTML = "<h3>🛒 Buy Fertilizers</h3><p>Fertilizers and products listing will appear here.</p>";
+      }
+    }
+  </script>
 
 </body>
 </html>

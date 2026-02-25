@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./db");
 
+// ✅ OTP temporary storage
+global.otpStore = {};
+
 const userRoutes = require("./routes/userRoutes");
 
 const app = express();
