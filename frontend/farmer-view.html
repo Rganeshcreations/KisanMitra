@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>Farmer Profile View - KisanMitra</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(rgba(0,100,0,0.7), rgba(0,0,0,0.8)),
+                  url("images/farmer-bg.jpg");
+      background-size: cover;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      padding: 40px;
+    }
+
+    .left-panel {
+      width: 300px;
+      background: rgba(0,0,0,0.6);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    .left-panel img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 4px solid white;
+      object-fit: cover;
+    }
+
+    .left-panel h2 {
+      margin-top: 15px;
+    }
+
+    .right-panel {
+      flex: 1;
+      margin-left: 40px;
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 15px;
+    }
+
+    .info-row {
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .edit-btn {
+      background: white;
+      color: green;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+      margin-top: 20px;
+    }
+
+    .edit-btn:hover {
+      background: #c8e6c9;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+```
+<!-- LEFT PROFILE PANEL -->
+<div class="left-panel">
+
+  <img id="profileImage"
+       src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+
+  <h2 id="farmerName"></h2>
+
+  <p id="farmerLocation"></p>
+
+</div>
+
+
+<!-- RIGHT PROFILE DETAILS -->
+<div class="right-panel">
+
+  <h1>🌾 Farmer Profile</h1>
+
+  <div class="info-row">🌱 Crops: <span id="crops"></span></div>
+  <div class="info-row">🌍 Land Area: <span id="land_area"></span></div>
+  <div class="info-row">🌾 Soil Type: <span id="soil_type"></span></div>
+  <div class="info-row">📍 Location: <span id="location"></span></div>
+  <div class="info-row">💧 Irrigation: <span id="irrigation_type"></span></div>
+
+  <button class="edit-btn" onclick="editProfile()">Edit Profile</button>
+
+</div>
+```
+
+  </div>
+
+  <script>
+
+  document.addEventListener("DOMContentLoaded", async function () {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      alert("Login required");
+      window.location.href = "login.html";
+      return;
+    }
+
+    // Show farmer name
+    const nameElement = document.getElementById("farmerName");
+    if (nameElement) {
+      nameElement.innerText = user.name;
+    }
+
+    try {
+
+      const res = await fetch(
+        "http://localhost:5000/api/users/farmer-profile/" + user.id
+      );
+
+      const profile = await res.json();
+
+      if (!profile.exists) {
+        alert("Profile not created");
+        window.location.href = "farmer-profile.html";
+        return;
+      }
+
+      // Fill profile fields safely
+
+      const crops = document.getElementById("crops");
+      if (crops) crops.innerText = profile.crops || "-";
+
+      const land = document.getElementById("land_area");
+      if (land) land.innerText = (profile.land_area || "-") + " acres";
+
+      const soil = document.getElementById("soil_type");
+      if (soil) soil.innerText = profile.soil_type || "-";
+
+      const location = document.getElementById("location");
+      if (location) location.innerText = profile.location || "-";
+
+      const irrigation = document.getElementById("irrigation_type");
+      if (irrigation) irrigation.innerText = profile.irrigation_type || "-";
+
+      const farmerLocation = document.getElementById("farmerLocation");
+      if (farmerLocation) farmerLocation.innerText = profile.location || "-";
+
+    } catch (error) {
+
+      console.log("Profile error:", error);
+      alert("Failed to load profile");
+
+    }
+
+  });
+
+
+  function editProfile() {
+
+    window.location.href = "farmer-profile.html";
+
+  }
+
+  </script>
+
+</body>
+
+</html>

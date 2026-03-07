@@ -1,35 +1,268 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login - KisanMitra</title>
-  <link rel="stylesheet" href="css/login.css">
+<title>Login - KisanMitra</title>
+<link rel="stylesheet" href="css/login.css">
 </head>
+
 <body>
 
-  <div class="login-box">
-    <h2>KisanMitra Login 🌾</h2>
+<div class="login-box">
 
-    <!-- Password Login -->
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+<h2>KisanMitra Login 🌾</h2>
 
-    <button type="button" onclick="loginUser()">Login with Password</button>
+<!-- PASSWORD LOGIN -->
 
-    <hr>
+<input type="email" id="email" placeholder="Email">
 
-    <!-- OTP Login Section -->
-    <h3>Login with OTP</h3>
+<select id="role">
+<option value="">Select Role</option>
+<option value="farmer">Farmer</option>
+<option value="expert">Expert</option>
+<option value="public">Public</option>
+</select>
 
-    <input type="email" id="otpEmail" placeholder="Enter Email for OTP">
-    <button type="button" onclick="sendOtp()">Send OTP</button>
+<input type="password" id="password" placeholder="Password">
 
-    <input type="text" id="otp" placeholder="Enter OTP">
-    <button type="button" onclick="verifyOtp()">Login with OTP</button>
+<button onclick="loginUser()">Login with Password</button>
 
-    <p id="message"></p>
-  </div>
+<hr>
 
-  <script src="js/auth.js"></script>
+<!-- OTP LOGIN -->
+
+<h3>Login with OTP</h3>
+
+<input type="email" id="otpEmail" placeholder="Enter Email for OTP">
+
+<select id="otpRole">
+<option value="">Select Role</option>
+<option value="farmer">Farmer</option>
+<option value="expert">Expert</option>
+<option value="public">Public</option>
+</select>
+
+<button onclick="sendOtp()">Send OTP</button>
+
+<input type="text" id="otp" placeholder="Enter OTP">
+
+<button onclick="verifyOtp()">Login with OTP</button>
+
+<p id="message"></p>
+
+</div>
+
+
+
+<script>
+
+const API = "http://localhost:5000/api/users";
+
+
+
+// ===============================
+// PASSWORD LOGIN
+// ===============================
+
+async function loginUser(){
+
+const email = document.getElementById("email").value.trim();
+const password = document.getElementById("password").value.trim();
+const role = document.getElementById("role").value;
+
+if(!email || !password || !role){
+
+document.getElementById("message").innerText =
+"Please enter email, password and role";
+
+return;
+
+}
+
+try{
+
+const res = await fetch(API + "/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email,
+password,
+role
+})
+});
+
+const data = await res.json();
+
+if(!res.ok){
+
+document.getElementById("message").innerText = data.message;
+return;
+
+}
+
+// store user
+localStorage.setItem("user", JSON.stringify(data.user));
+
+// redirect
+redirectUser(role, data.profileExists);
+
+}
+catch(error){
+
+document.getElementById("message").innerText = "Server connection error";
+
+}
+
+}
+
+
+
+// ===============================
+// SEND OTP
+// ===============================
+
+async function sendOtp(){
+
+const email = document.getElementById("otpEmail").value.trim();
+const role = document.getElementById("otpRole").value;
+
+if(!email || !role){
+
+document.getElementById("message").innerText =
+"Please enter email and role";
+
+return;
+
+}
+
+try{
+
+const res = await fetch(API + "/send-otp",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email,
+role
+})
+});
+
+const data = await res.json();
+
+document.getElementById("message").innerText = data.message;
+
+}
+catch(error){
+
+document.getElementById("message").innerText = "OTP send failed";
+
+}
+
+}
+
+
+
+// ===============================
+// VERIFY OTP
+// ===============================
+
+async function verifyOtp(){
+
+const email = document.getElementById("otpEmail").value.trim();
+const otp = document.getElementById("otp").value.trim();
+const role = document.getElementById("otpRole").value;
+
+if(!email || !otp || !role){
+
+document.getElementById("message").innerText =
+"Please enter email, role and OTP";
+
+return;
+
+}
+
+try{
+
+const res = await fetch(API + "/verify-otp",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email,
+otp,
+role
+})
+});
+
+const data = await res.json();
+
+if(!res.ok){
+
+document.getElementById("message").innerText = data.message;
+return;
+
+}
+
+// save user
+localStorage.setItem("user", JSON.stringify(data.user));
+
+// redirect
+redirectUser(role, data.profileExists);
+
+}
+catch(error){
+
+document.getElementById("message").innerText = "OTP verification failed";
+
+}
+
+}
+
+
+
+// ===============================
+// REDIRECT USER
+// ===============================
+
+function redirectUser(role, profileExists){
+
+// ensure boolean
+profileExists = profileExists === true;
+
+if(role === "farmer"){
+
+if(profileExists){
+window.location.href = "farmer.html";
+}
+else{
+window.location.href = "farmer-profile.html";
+}
+
+}
+
+else if(role === "expert"){
+
+if(profileExists){
+window.location.href = "expert.html";
+}
+else{
+window.location.href = "expert-profile.html";
+}
+
+}
+
+else{
+
+window.location.href = "public.html";
+
+}
+
+}
+
+</script>
 
 </body>
 </html>

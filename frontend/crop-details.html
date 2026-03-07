@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crop Details - KisanMitra</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
+                  url("images/farmer-bg.jpg");
+      background-size: cover;
+      color: white;
+    }
+
+    .header {
+      text-align: center;
+      padding: 25px;
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-weight: bold;
+    }
+
+    .tabs button.active {
+      background: #4CAF50;
+    }
+
+    .content-box {
+      width: 80%;
+      margin: auto;
+      background: rgba(255,255,255,0.1);
+      padding: 25px;
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    input, select {
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 10px;
+      border: none;
+      width: 100%;
+    }
+
+    button.action-btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      margin-top: 10px;
+    }
+
+    .expense-card {
+      background: rgba(255,255,255,0.15);
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="header">🌾 Crop Details</div>
+
+  <div class="tabs">
+    <button id="detailsTab" class="active" onclick="showTab('details')">📋 Details</button>
+    <button id="expenseTab" onclick="showTab('expense')">💰 Expenditures</button>
+    <button id="summaryTab" onclick="showTab('summary')">📊 Summary</button>
+    <button onclick="window.location.href='crop.html'">⬅ Back</button>
+  </div>
+
+  <div class="content-box" id="contentArea"></div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const cropId = urlParams.get("crop_id");
+
+    let cropData = {};
+    let expenses = [];
+
+    function showTab(tab) {
+
+      document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
+      
+      if (tab === "details") {
+        document.getElementById("detailsTab").classList.add("active");
+        renderDetails();
+      }
+
+      if (tab === "expense") {
+        document.getElementById("expenseTab").classList.add("active");
+        renderExpense();
+      }
+
+      if (tab === "summary") {
+        document.getElementById("summaryTab").classList.add("active");
+        renderSummary();
+      }
+    }
+
+    async function loadCrop() {
+      const res = await fetch("http://localhost:5000/api/users/get-crop/" + cropId);
+      cropData = await res.json();
+      renderDetails();
+    }
+
+    async function loadExpenses() {
+      const res = await fetch("http://localhost:5000/api/users/get-expenditures/" + cropId);
+      expenses = await res.json();
+    }
+
+    function renderDetails() {
+
+      const today = new Date();
+      const seedDate = new Date(cropData.seeding_date);
+      const daysPassed = Math.floor((today - seedDate) / (1000*60*60*24));
+
+      document.getElementById("contentArea").innerHTML = `
+        <h3>${cropData.crop_name}</h3>
+        <p>📅 Seeding Date: ${cropData.seeding_date}</p>
+        <p>⏳ Days Passed: ${daysPassed} days</p>
+        <p>📏 Land Size: ${cropData.land_size} acres</p>
+
+        <hr>
+
+        <h4>Add Production Details</h4>
+        <input type="number" id="quantity" placeholder="Quantity Produced">
+        <input type="number" id="price" placeholder="Selling Price per unit">
+        <button class="action-btn" onclick="updateProduction()">Save</button>
+      `;
+    }
+
+    async function updateProduction() {
+
+      const quantity = document.getElementById("quantity").value;
+      const price = document.getElementById("price").value;
+
+      await fetch(
+        "http://localhost:5000/api/users/update-production/" + cropId,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            quantity_produced: quantity,
+            selling_price: price
+          })
+        }
+      );
+
+      alert("Production Updated");
+    }
+
+    function renderExpense() {
+
+      document.getElementById("contentArea").innerHTML = `
+        <h3>Add Expenditure</h3>
+
+        <select id="expenseType">
+          <option value="worker">Worker</option>
+          <option value="fertilizer">Fertilizer</option>
+          <option value="other">Other</option>
+        </select>
+
+        <input type="text" id="desc" placeholder="Description">
+        <input type="number" id="amount" placeholder="Total Amount">
+        <input type="date" id="date">
+
+        <button class="action-btn" onclick="addExpense()">Add Expense</button>
+
+        <hr>
+        <h4>Expense List</h4>
+        <div id="expenseList"></div>
+      `;
+
+      displayExpenses();
+    }
+
+    async function addExpense() {
+
+      const type = document.getElementById("expenseType").value;
+      const desc = document.getElementById("desc").value;
+      const amount = document.getElementById("amount").value;
+      const date = document.getElementById("date").value;
+
+      await fetch("http://localhost:5000/api/users/add-expenditure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          crop_id: cropId,
+          expense_category: type,
+          description: desc,
+          total_amount: amount,
+          expense_date: date
+        })
+      });
+
+      loadExpenses();
+      showTab("expense");
+    }
+
+    function displayExpenses() {
+
+      const list = document.getElementById("expenseList");
+      list.innerHTML = "";
+
+      expenses.forEach(exp => {
+        list.innerHTML += `
+          <div class="expense-card">
+            <p><strong>${exp.expense_category}</strong></p>
+            <p>${exp.description}</p>
+            <p>₹ ${exp.total_amount}</p>
+          </div>
+        `;
+      });
+    }
+
+    function renderSummary() {
+
+      let totalExpense = expenses.reduce((sum, e) => sum + parseFloat(e.total_amount), 0);
+      let revenue = (cropData.quantity_produced || 0) * (cropData.selling_price || 0);
+      let profit = revenue - totalExpense;
+
+      document.getElementById("contentArea").innerHTML = `
+        <h3>📊 Financial Summary</h3>
+        <p>💰 Total Expense: ₹ ${totalExpense}</p>
+        <p>📈 Revenue: ₹ ${revenue}</p>
+        <h2>${profit >= 0 ? "Profit" : "Loss"}: ₹ ${profit}</h2>
+      `;
+    }
+
+    loadCrop();
+    loadExpenses();
+
+  </script>
+
+</body>
+</html>

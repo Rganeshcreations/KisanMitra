@@ -65,11 +65,13 @@ function checkConfirmPassword() {
 // REGISTER FUNCTION
 // =======================
 function registerUser() {
+
   const name = document.getElementById("name")?.value;
   const email = document.getElementById("email")?.value;
   const password = document.getElementById("password")?.value;
   const confirm = document.getElementById("confirmPassword")?.value;
   const role = document.getElementById("role")?.value;
+
   const messageBox = document.getElementById("message");
 
   if (!name || !email || !password || !confirm || !role) {
@@ -85,27 +87,45 @@ function registerUser() {
   }
 
   fetch("http://localhost:5000/api/users/register", {
+
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password, role })
-  })
-    .then(res => res.json())
-    .then(data => {
-      messageBox.innerText = data.message;
-      messageBox.style.color = data.message.includes("success")
-        ? "green"
-        : "red";
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      name,
+      email,
+      password,
+      role
     })
-    .catch(() => {
-      messageBox.innerText = "Registration failed";
-      messageBox.style.color = "red";
-    });
+
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    messageBox.innerText = data.message;
+
+    messageBox.style.color =
+      data.message.includes("success") ? "green" : "red";
+
+  })
+  .catch(() => {
+
+    messageBox.innerText = "Registration failed";
+    messageBox.style.color = "red";
+
+  });
+
 }
+
 
 // =======================
 // LOGIN WITH PASSWORD
 // =======================
 function loginUser() {
+
   const email = document.getElementById("email")?.value;
   const password = document.getElementById("password")?.value;
   const messageBox = document.getElementById("message");
@@ -117,22 +137,36 @@ function loginUser() {
   }
 
   fetch("http://localhost:5000/api/users/login", {
+
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      email,
+      password
+    })
+
   })
-    .then(res => res.json())
-    .then(data => handleLoginResponse(data))
-    .catch(() => {
-      messageBox.innerText = "Login failed";
-      messageBox.style.color = "red";
-    });
+  .then(res => res.json())
+  .then(data => handleLoginResponse(data))
+  .catch(() => {
+
+    messageBox.innerText = "Login failed";
+    messageBox.style.color = "red";
+
+  });
+
 }
+
 
 // =======================
 // SEND OTP
 // =======================
 function sendOtp() {
+
   const email = document.getElementById("otpEmail")?.value;
   const messageBox = document.getElementById("message");
 
@@ -143,26 +177,40 @@ function sendOtp() {
   }
 
   fetch("http://localhost:5000/api/users/send-otp", {
+
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
     body: JSON.stringify({ email })
+
   })
-    .then(res => res.json())
-    .then(data => {
-      messageBox.innerText = data.message;
-      messageBox.style.color =
-        data.message.includes("OTP sent") ? "green" : "red";
-    })
-    .catch(() => {
-      messageBox.innerText = "Failed to send OTP";
-      messageBox.style.color = "red";
-    });
+  .then(res => res.json())
+  .then(data => {
+
+    messageBox.innerText = data.message;
+
+    messageBox.style.color =
+      data.message.includes("OTP sent") ? "green" : "red";
+
+  })
+  .catch(() => {
+
+    messageBox.innerText = "Failed to send OTP";
+    messageBox.style.color = "red";
+
+  });
+
 }
+
 
 // =======================
 // VERIFY OTP
 // =======================
 function verifyOtp() {
+
   const email = document.getElementById("otpEmail")?.value;
   const otp = document.getElementById("otp")?.value;
   const messageBox = document.getElementById("message");
@@ -174,22 +222,36 @@ function verifyOtp() {
   }
 
   fetch("http://localhost:5000/api/users/verify-otp", {
+
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, otp })
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      email,
+      otp
+    })
+
   })
-    .then(res => res.json())
-    .then(data => handleLoginResponse(data))
-    .catch(() => {
-      messageBox.innerText = "OTP verification failed";
-      messageBox.style.color = "red";
-    });
+  .then(res => res.json())
+  .then(data => handleLoginResponse(data))
+  .catch(() => {
+
+    messageBox.innerText = "OTP verification failed";
+    messageBox.style.color = "red";
+
+  });
+
 }
+
 
 // =======================
 // HANDLE LOGIN REDIRECT
 // =======================
 function handleLoginResponse(data) {
+
   const messageBox = document.getElementById("message");
 
   if (!data.user) {
@@ -202,43 +264,73 @@ function handleLoginResponse(data) {
 
   const user = data.user;
 
+  // ===================
+  // ADMIN
+  // ===================
   if (user.role === "admin") {
+
     window.location.href = "admin.html";
+
   }
-  else if (user.role === "farmer") {
-    fetch(`http://localhost:5000/api/users/farmer-profile/${user.id}`)
-      .then(res => res.json())
-      .then(profileData => {
-        if (profileData.exists) {
-          window.location.href = "farmer.html";
-        } else {
-          window.location.href = "farmer-profile.html";
-        }
-      })
-      .catch(() => {
-        window.location.href = "farmer-profile.html";
-      });
+
+  // ===================
+  // FARMER FLOW
+  // ===================
+  else if (user.role === "Farmer") {
+
+    if (data.profileExists) {
+      window.location.href = "farmer.html";
+    } else {
+      window.location.href = "farmer-profile.html";
+    }
+
   }
-  else if (user.role === "expert") {
-    window.location.href = "expert.html";
+
+  // ===================
+  // EXPERT FLOW
+  // ===================
+  else if (user.role === "Expert") {
+
+    if (data.profileExists) {
+      window.location.href = "expert.html";
+    } else {
+      window.location.href = "expert-profile.html";
+    }
+
   }
+
+  // ===================
+  // GOVERNMENT
+  // ===================
   else if (user.role === "government") {
+
     window.location.href = "government.html";
+
   }
+
+  // ===================
+  // PUBLIC
+  // ===================
   else {
+
     window.location.href = "public.html";
+
   }
+
 }
+
 
 // =======================
 // SAVE FARMER PROFILE
 // =======================
 function saveFarmerProfile() {
+
   const crops = document.getElementById("crops")?.value.trim();
   const land_area = document.getElementById("land_area")?.value.trim();
   const soil_type = document.getElementById("soil_type")?.value.trim();
   const location = document.getElementById("location")?.value.trim();
   const irrigation_type = document.getElementById("irrigation_type")?.value.trim();
+
   const messageBox = document.getElementById("message");
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -256,8 +348,13 @@ function saveFarmerProfile() {
   }
 
   fetch("http://localhost:5000/api/users/farmer-profile", {
+
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
     body: JSON.stringify({
       user_id: user.id,
       crops,
@@ -266,21 +363,30 @@ function saveFarmerProfile() {
       location,
       irrigation_type
     })
-  })
-    .then(res => res.json())
-    .then(data => {
-      messageBox.innerText = data.message;
-      messageBox.style.color =
-        data.message.includes("success") ? "green" : "red";
 
-      if (data.message.includes("success")) {
-        setTimeout(() => {
-          window.location.href = "farmer.html";
-        }, 1200);
-      }
-    })
-    .catch(() => {
-      messageBox.innerText = "Error saving profile";
-      messageBox.style.color = "red";
-    });
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    messageBox.innerText = data.message;
+
+    messageBox.style.color =
+      data.message.includes("success") ? "green" : "red";
+
+    if (data.message.includes("success")) {
+
+      setTimeout(() => {
+        window.location.href = "farmer.html";
+      }, 1200);
+
+    }
+
+  })
+  .catch(() => {
+
+    messageBox.innerText = "Error saving profile";
+    messageBox.style.color = "red";
+
+  });
+
 }

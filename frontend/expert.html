@@ -2,22 +2,24 @@
 <html>
 <head>
   <title>Expert Dashboard - KisanMitra</title>
+
   <style>
     body {
       margin: 0;
       font-family: Arial;
       background:
-        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)),
+        linear-gradient(rgba(34,139,34,0.6), rgba(0,0,0,0.7)),
         url("images/farmer-bg.jpg");
       background-size: cover;
       background-position: center;
+      background-attachment: fixed;
       color: white;
     }
 
     .sidebar {
       width: 240px;
       height: 100vh;
-      background: #1b5e20;
+      background: rgba(0,100,0,0.95);
       position: fixed;
       padding-top: 30px;
     }
@@ -31,10 +33,10 @@
       width: 85%;
       margin: 12px 15px;
       padding: 12px;
-      border-radius: 8px;
       border: none;
+      border-radius: 8px;
       background: white;
-      color: #1b5e20;
+      color: #2e7d32;
       font-weight: bold;
       cursor: pointer;
     }
@@ -52,36 +54,67 @@
     }
 
     .profile img {
-      width: 80px;
+      width: 85px;
+      height: 85px;
       border-radius: 50%;
       border: 3px solid white;
+      cursor: pointer;
+      object-fit: cover;
+      background: white;
+    }
+
+    .profile p {
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 16px;
     }
   </style>
 </head>
+
 <body>
 
-<div class="sidebar">
-  <h3>👨‍🌾 Expert Panel</h3>
-  <button>View Questions</button>
-  <button>Answer Farmers</button>
-  <button>Upload Advice</button>
-</div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>👨‍🌾 Expert Panel</h3>
 
-<div class="content">
-  <h2>Expert Dashboard</h2>
-</div>
+    <button onclick="window.location.href='expert-view.html'">
+      👤 My Profile
+    </button>
 
-<div class="profile">
-  <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
-  <p id="name"></p>
-</div>
+    <button onclick="alert('Farmer Questions module coming soon')">
+      ❓ Farmer Questions
+    </button>
 
-<script>
-  const user = JSON.parse(localStorage.getItem("user"));
-  if(user){
-    document.getElementById("name").innerText = user.name;
-  }
-</script>
+    <button onclick="alert('Answer history coming soon')">
+      📜 Answer History
+    </button>
+
+  </div>
+
+  <div class="content">
+    <h2>Welcome to Expert Dashboard 🌾</h2>
+  </div>
+
+  <!-- Profile -->
+  <div class="profile">
+    <img id="profileImage"
+         src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+         onclick="window.location.href='expert-view.html'">
+
+    <p id="expertName"></p>
+  </div>
+
+  <script>
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("expertName").innerText = user.name;
+    }
+
+  </script>
 
 </body>
 </html>

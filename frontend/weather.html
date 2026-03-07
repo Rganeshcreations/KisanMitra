@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather - KisanMitra</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+
+      /* ✅ Your Image Background */
+      background:
+        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)),
+        url("images/weather-bg.jpg");
+
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      text-align: center;
+    }
+
+    .header {
+      padding: 25px;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .search-box {
+      margin: 20px;
+    }
+
+    input {
+      padding: 10px;
+      width: 220px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+
+    button:hover {
+      background: #2e7d32;
+    }
+
+    .weather-card {
+      margin: 30px auto;
+      width: 320px;
+      background: rgba(255,255,255,0.15);
+      padding: 25px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .weather-card img {
+      width: 90px;
+    }
+
+    .forecast-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .forecast-card {
+      background: rgba(255,255,255,0.15);
+      padding: 15px;
+      border-radius: 15px;
+      width: 130px;
+      backdrop-filter: blur(8px);
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="header">☁ Weather Dashboard</div>
+
+  <div class="search-box">
+    <input type="text" id="locationInput" placeholder="Enter Village or City">
+    <button onclick="getWeather()">Search</button>
+    <button onclick="window.location.href='farmer.html'">⬅ Back</button>
+  </div>
+
+  <div id="currentWeather"></div>
+  <div class="forecast-container" id="forecast"></div>
+
+  <script>
+
+    const API_KEY = "b603752cbff56369b28029ca59cc852c";
+
+    // Auto load default location
+    window.onload = function() {
+      getWeather("Vijayawada"); 
+    };
+
+    function getWeather(customLocation) {
+
+      const location = customLocation || document.getElementById("locationInput").value;
+
+      if (!location) {
+        alert("Enter location");
+        return;
+      }
+
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${API_KEY}&units=metric`)
+        .then(res => res.json())
+        .then(data => {
+
+          if (data.cod !== 200) {
+            alert("Location not found");
+            return;
+          }
+
+          const icon = data.weather[0].icon;
+
+          document.getElementById("currentWeather").innerHTML = `
+            <div class="weather-card">
+              <h2>${data.name}</h2>
+              <img src="https://openweathermap.org/img/wn/${icon}@2x.png">
+              <h3>${data.main.temp} °C</h3>
+              <p>${data.weather[0].description}</p>
+              <p>💧 Humidity: ${data.main.humidity}%</p>
+              <p>🌬 Wind: ${data.wind.speed} m/s</p>
+            </div>
+          `;
+        });
+
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${API_KEY}&units=metric`)
+        .then(res => res.json())
+        .then(data => {
+
+          let forecastHTML = "";
+
+          for (let i = 0; i < data.list.length; i += 8) {
+
+            const day = data.list[i];
+            const date = new Date(day.dt_txt).toDateString();
+            const icon = day.weather[0].icon;
+
+            forecastHTML += `
+              <div class="forecast-card">
+                <p>${date}</p>
+                <img src="https://openweathermap.org/img/wn/${icon}.png">
+                <p>${day.main.temp} °C</p>
+              </div>
+            `;
+          }
+
+          document.getElementById("forecast").innerHTML = forecastHTML;
+        });
+
+    }
+
+  </script>
+
+</body>
+</html>

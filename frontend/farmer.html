@@ -16,7 +16,6 @@
       color: white;
     }
 
-    /* Sidebar */
     .sidebar {
       width: 240px;
       height: 100vh;
@@ -49,7 +48,6 @@
       transform: scale(1.05);
     }
 
-    /* Content */
     .content {
       margin-left: 260px;
       padding: 30px;
@@ -64,7 +62,6 @@
       min-height: 300px;
     }
 
-    /* Profile */
     .profile {
       position: absolute;
       top: 20px;
@@ -87,7 +84,6 @@
       font-weight: bold;
       font-size: 16px;
     }
-
   </style>
 </head>
 
@@ -97,17 +93,27 @@
   <div class="sidebar">
     <h3>🌾 Farmer Panel</h3>
 
-    <button onclick="showSection('crop')">🌱 Crop Data</button>
-    <button onclick="showSection('weather')">☁ Weather</button>
-    <button onclick="showSection('expert')">👨‍🌾 Ask Expert</button>
-    <button onclick="showSection('buy')">🛒 Buy Fertilizers</button>
+    <button onclick="window.location.href='crop.html'">
+      🌱 Crop Data
+    </button>
+
+    <button onclick="window.location.href='weather.html'">
+      ☁ Weather
+    </button>
+
+    <button onclick="alert('Expert module coming soon')">
+      👨‍🌾 Ask Expert
+    </button>
+
+    <button onclick="alert('Buy module coming soon')">
+      🛒 Buy Fertilizers
+    </button>
   </div>
 
-  <!-- Content -->
+  <!-- Main Content -->
   <div class="content">
     <h2>Welcome to KisanMitra Dashboard 🚜</h2>
-
-    <div class="content-box" id="mainContent">
+    <div class="content-box">
       Select an option from the left menu.
     </div>
   </div>
@@ -116,41 +122,18 @@
   <div class="profile">
     <img id="profileImage"
          src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-         onclick="showDetails()">
+         onclick="window.location.href='farmer-view.html'">
     <p id="farmerName"></p>
   </div>
 
   <script>
     const user = JSON.parse(localStorage.getItem("user"));
 
-    if (user) {
+    // Redirect if not logged in
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
       document.getElementById("farmerName").innerText = user.name;
-
-      // If farmer uploaded image saved in localStorage
-      if (user.photo) {
-        document.getElementById("profileImage").src = user.photo;
-      }
-    }
-
-    function showDetails() {
-      alert("👤 Name: " + user.name + "\nRole: " + user.role);
-    }
-
-    function showSection(section) {
-      const content = document.getElementById("mainContent");
-
-      if (section === "crop") {
-        content.innerHTML = "<h3>🌱 Crop Data Section</h3><p>Crop information will appear here.</p>";
-      }
-      else if (section === "weather") {
-        content.innerHTML = "<h3>☁ Weather Section</h3><p>Weather API integration coming soon.</p>";
-      }
-      else if (section === "expert") {
-        content.innerHTML = "<h3>👨‍🌾 Ask Expert</h3><p>Ask your farming doubts here.</p>";
-      }
-      else if (section === "buy") {
-        content.innerHTML = "<h3>🛒 Buy Fertilizers</h3><p>Fertilizers and products listing will appear here.</p>";
-      }
     }
   </script>
 

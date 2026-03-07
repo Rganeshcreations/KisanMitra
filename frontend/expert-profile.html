@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Expert Profile - KisanMitra</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:url("images/farm-bg.jpg") no-repeat center center/cover;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.container{
+background:white;
+padding:40px;
+width:450px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+.container h1{
+color:#2e7d32;
+margin-bottom:20px;
+}
+
+.container input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+.container button{
+width:100%;
+padding:12px;
+margin-top:15px;
+border:none;
+border-radius:8px;
+background:#2e7d32;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.container button:hover{
+background:#1b5e20;
+}
+
+#message{
+margin-top:10px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>👨‍🌾 Complete Expert Profile</h1>
+
+<input type="text" id="specialization" placeholder="Specialization">
+<input type="number" id="experience" placeholder="Experience (Years)">
+<input type="text" id="qualification" placeholder="Qualification">
+<input type="text" id="location" placeholder="Location">
+<input type="text" id="phone" placeholder="Phone Number">
+
+<button onclick="saveExpertProfile()">Save Profile</button>
+
+<p id="message"></p>
+
+</div>
+
+
+<script>
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+alert("Please login first");
+window.location.href="login.html";
+}
+
+
+
+// ======================
+// SAVE EXPERT PROFILE
+// ======================
+
+async function saveExpertProfile(){
+
+const specialization = document.getElementById("specialization").value;
+const experience = document.getElementById("experience").value;
+const qualification = document.getElementById("qualification").value;
+const location = document.getElementById("location").value;
+const phone = document.getElementById("phone").value;
+
+if(!specialization || !experience || !qualification || !location || !phone){
+
+document.getElementById("message").innerText="Please fill all fields";
+return;
+
+}
+
+const res = await fetch(
+"http://localhost:5000/api/users/expert-profile",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+user_id:user.id,
+specialization,
+experience,
+qualification,
+location,
+phone
+})
+}
+);
+
+const data = await res.json();
+
+document.getElementById("message").innerText=data.message;
+
+if(res.ok){
+
+setTimeout(()=>{
+window.location.href="expert.html";
+},1500);
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
