@@ -1,141 +1,258 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Farmer Dashboard - KisanMitra</title>
+<title>Farmer Dashboard - KisanMitra</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background:
-        linear-gradient(rgba(34,139,34,0.6), rgba(0,0,0,0.7)),
-        url("images/farmer-bg.jpg");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      color: white;
-    }
+<style>
 
-    .sidebar {
-      width: 240px;
-      height: 100vh;
-      background: rgba(0,100,0,0.95);
-      position: fixed;
-      padding-top: 30px;
-    }
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:
+linear-gradient(rgba(34,139,34,0.6),rgba(0,0,0,0.7)),
+url("images/farmer-bg.jpg");
+background-size:cover;
+color:white;
+}
 
-    .sidebar h3 {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 20px;
-    }
+/* SIDEBAR */
+.sidebar{
+width:240px;
+height:100vh;
+background:rgba(0,100,0,0.95);
+position:fixed;
+left:0;
+top:0;
+padding-top:30px;
+}
 
-    .sidebar button {
-      width: 85%;
-      margin: 12px 15px;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background: white;
-      color: #2e7d32;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+.sidebar h3{
+text-align:center;
+margin-bottom:30px;
+}
 
-    .sidebar button:hover {
-      background: #c8e6c9;
-      transform: scale(1.05);
-    }
+.sidebar button{
+width:85%;
+margin:12px 15px;
+padding:12px;
+border:none;
+border-radius:8px;
+background:white;
+color:#2e7d32;
+font-weight:bold;
+cursor:pointer;
+}
 
-    .content {
-      margin-left: 260px;
-      padding: 30px;
-    }
+/* CONTENT */
+.content{
+margin-left:260px;
+padding:30px;
+}
 
-    .content-box {
-      background: rgba(255,255,255,0.15);
-      padding: 25px;
-      border-radius: 15px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-      min-height: 300px;
-    }
+/* PROFILE */
+.profile{
+position:absolute;
+top:20px;
+right:30px;
+text-align:center;
+}
 
-    .profile {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      text-align: center;
-    }
+.profile img{
+width:90px;
+height:90px;
+border-radius:50%;
+border:3px solid white;
+object-fit:cover;
+cursor:pointer;
+}
 
-    .profile img {
-      width: 85px;
-      height: 85px;
-      border-radius: 50%;
-      border: 3px solid white;
-      cursor: pointer;
-      object-fit: cover;
-      background: white;
-    }
+/* DASHBOARD */
+.dashboard{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+margin-top:20px;
+}
 
-    .profile p {
-      margin-top: 8px;
-      font-weight: bold;
-      font-size: 16px;
-    }
-  </style>
+.card{
+background:rgba(255,255,255,0.15);
+padding:20px;
+border-radius:15px;
+width:200px;
+text-align:center;
+backdrop-filter:blur(10px);
+}
+
+.card h2{
+margin:10px 0;
+}
+
+.profit{
+color:lightgreen;
+}
+
+.loss{
+color:red;
+}
+
+.logout{
+margin-top:8px;
+padding:6px 12px;
+border:none;
+border-radius:5px;
+background:red;
+color:white;
+cursor:pointer;
+}
+
+</style>
+
 </head>
 
 <body>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h3>🌾 Farmer Panel</h3>
+<!-- SIDEBAR -->
+<div class="sidebar">
+<h3>🌾 Farmer Panel</h3>
 
-    <button onclick="window.location.href='crop.html'">
-      🌱 Crop Data
-    </button>
+<button onclick="location.href='crop-list.html'">🌱 Crop Data</button>
+<button onclick="location.href='weather.html'">☁ Weather</button>
+<button onclick="location.href='ask-options.html'">👨‍🌾 Ask Expert</button>
+<button onclick="location.href='farmer-answers.html'">📩 My Questions</button>
+<button onclick="location.href='farmer-schemes.html'">🏛 Schemes</button>
 
-    <button onclick="window.location.href='weather.html'">
-      ☁ Weather
-    </button>
+</div>
 
-    <button onclick="alert('Expert module coming soon')">
-      👨‍🌾 Ask Expert
-    </button>
+<!-- CONTENT -->
+<div class="content">
 
-    <button onclick="alert('Buy module coming soon')">
-      🛒 Buy Fertilizers
-    </button>
-  </div>
+<h2>Welcome to KisanMitra Dashboard 🚜</h2>
 
-  <!-- Main Content -->
-  <div class="content">
-    <h2>Welcome to KisanMitra Dashboard 🚜</h2>
-    <div class="content-box">
-      Select an option from the left menu.
-    </div>
-  </div>
+<div class="dashboard">
 
-  <!-- Profile Section -->
-  <div class="profile">
-    <img id="profileImage"
-         src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-         onclick="window.location.href='farmer-view.html'">
-    <p id="farmerName"></p>
-  </div>
+<div class="card">
+<p>Total Crops</p>
+<h2 id="totalCrops">0</h2>
+</div>
 
-  <script>
-    const user = JSON.parse(localStorage.getItem("user"));
+<div class="card">
+<p>Total Expense</p>
+<h2 id="totalExpense">₹0</h2>
+</div>
 
-    // Redirect if not logged in
-    if (!user) {
-      window.location.href = "login.html";
-    } else {
-      document.getElementById("farmerName").innerText = user.name;
-    }
-  </script>
+<div class="card">
+<p>Total Revenue</p>
+<h2 id="totalRevenue">₹0</h2>
+</div>
+
+<div class="card">
+<p>Profit / Loss</p>
+<h2 id="profit">₹0</h2>
+</div>
+
+</div>
+
+</div>
+
+<!-- PROFILE -->
+<div class="profile">
+
+<!-- CLICKABLE PROFILE IMAGE -->
+<img src="images/ganesh.jpg" onclick="openProfile()">
+
+<p id="farmerName"></p>
+
+<button class="logout" onclick="logout()">Logout</button>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+// LOGIN CHECK
+if(!user){
+window.location.href="login.html";
+return;
+}
+
+// SHOW NAME
+document.getElementById("farmerName").innerText =
+user.name || "Farmer";
+
+// LOAD DASHBOARD
+loadDashboard();
+
+});
+
+
+// =======================
+// OPEN PROFILE PAGE
+// =======================
+
+function openProfile(){
+window.location.href = "farmer-view.html";
+}
+
+
+// =======================
+// LOAD DASHBOARD DATA
+// =======================
+
+async function loadDashboard(){
+
+try{
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+const res = await fetch(
+"http://localhost:5000/api/users/farmer-dashboard/"+user.id
+);
+
+const data = await res.json();
+
+// update UI
+document.getElementById("totalCrops").innerText = data.totalCrops;
+
+document.getElementById("totalExpense").innerText =
+"₹ " + data.totalExpense;
+
+document.getElementById("totalRevenue").innerText =
+"₹ " + data.totalRevenue;
+
+const profitEl = document.getElementById("profit");
+
+profitEl.innerText = "₹ " + data.profit;
+
+// color
+if(data.profit >= 0){
+profitEl.classList.add("profit");
+}else{
+profitEl.classList.add("loss");
+}
+
+}catch(err){
+
+console.log(err);
+alert("Failed to load dashboard");
+
+}
+
+}
+
+
+// =======================
+// LOGOUT
+// =======================
+
+function logout(){
+localStorage.clear();
+window.location.href="login.html";
+}
+
+</script>
 
 </body>
 </html>

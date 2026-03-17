@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Agriculture Analytics - KisanMitra</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+}
+
+/* Sidebar */
+
+.sidebar{
+width:250px;
+height:100vh;
+background:#2c3e50;
+position:fixed;
+color:white;
+padding-top:20px;
+}
+
+.sidebar h2{
+text-align:center;
+margin-bottom:30px;
+}
+
+.sidebar button{
+width:90%;
+margin:10px;
+padding:12px;
+border:none;
+background:#34495e;
+color:white;
+cursor:pointer;
+border-radius:5px;
+}
+
+.sidebar button:hover{
+background:#1abc9c;
+}
+
+/* Main */
+
+.main{
+margin-left:260px;
+padding:30px;
+}
+
+.header{
+font-size:28px;
+margin-bottom:20px;
+}
+
+/* Table */
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+margin-top:30px;
+}
+
+th,td{
+padding:12px;
+border:1px solid #ddd;
+text-align:left;
+}
+
+th{
+background:#27ae60;
+color:white;
+}
+
+/* Chart */
+
+.chart-box{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>Government Panel</h2>
+
+<button onclick="location.href='government-dashboard.html'">Dashboard</button>
+
+<button onclick="location.href='government-farmers.html'">Farmers</button>
+
+<button onclick="location.href='government-experts.html'">Experts</button>
+
+<button onclick="location.href='government-crops.html'">Crops</button>
+
+<button onclick="location.href='government-analytics.html'">Analytics</button>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+
+<div class="main">
+
+<div class="header">
+Agriculture Analytics
+</div>
+
+<!-- CHART -->
+
+<div class="chart-box">
+
+<h3>Crop Production Chart</h3>
+
+<canvas id="cropChart"></canvas>
+
+</div>
+
+
+<!-- TABLE -->
+
+<table>
+
+<thead>
+
+<tr>
+<th>Crop Name</th>
+<th>Total Farmers</th>
+<th>Total Production</th>
+</tr>
+
+</thead>
+
+<tbody id="analyticsTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<script>
+
+// LOGIN CHECK
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+alert("Please login first");
+window.location.href="login.html";
+}
+
+
+
+// LOAD ANALYTICS
+
+async function loadAnalytics(){
+
+try{
+
+const res = await fetch("http://localhost:5000/api/admin/crops");
+const crops = await res.json();
+
+const cropStats = {};
+
+crops.forEach(c=>{
+
+const crop = c.crop_name;
+
+if(!cropStats[crop]){
+
+cropStats[crop] = {
+farmers:0,
+production:0
+};
+
+}
+
+cropStats[crop].farmers += 1;
+cropStats[crop].production += parseFloat(c.quantity_produced);
+
+});
+
+
+let table="";
+let labels=[];
+let productionData=[];
+
+for(const crop in cropStats){
+
+labels.push(crop);
+productionData.push(cropStats[crop].production);
+
+table += `
+<tr>
+<td>${crop}</td>
+<td>${cropStats[crop].farmers}</td>
+<td>${cropStats[crop].production} kg</td>
+</tr>
+`;
+
+}
+
+document.getElementById("analyticsTable").innerHTML = table;
+
+
+
+// DRAW CHART
+
+const ctx = document.getElementById("cropChart");
+
+new Chart(ctx,{
+type:"bar",
+data:{
+labels:labels,
+datasets:[{
+label:"Total Production (kg)",
+data:productionData,
+backgroundColor:"#27ae60"
+}]
+},
+options:{
+responsive:true
+}
+});
+
+
+}
+catch(err){
+
+console.log(err);
+
+}
+
+}
+
+
+
+// LOGOUT
+
+function logout(){
+
+localStorage.clear();
+window.location.href="login.html";
+
+}
+
+loadAnalytics();
+
+</script>
+
+</body>
+
+</html>

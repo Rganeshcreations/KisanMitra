@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Government Dashboard - KisanMitra</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#f4f6f9;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:260px;
+height:100vh;
+background:#1f2d3d;
+position:fixed;
+left:0;
+top:0;
+color:white;
+padding-top:20px;
+}
+
+.sidebar h2{
+text-align:center;
+margin-bottom:30px;
+font-size:22px;
+}
+
+.sidebar button{
+width:85%;
+margin:12px auto;
+display:block;
+padding:12px;
+border:none;
+background:#34495e;
+color:white;
+cursor:pointer;
+border-radius:8px;
+font-size:15px;
+transition:0.3s;
+}
+
+.sidebar button:hover{
+background:#27ae60;
+}
+
+/* MAIN CONTENT */
+
+.main{
+margin-left:260px;
+padding:40px;
+}
+
+.main h1{
+margin-bottom:30px;
+}
+
+/* CARDS */
+
+.cards{
+display:flex;
+gap:25px;
+flex-wrap:wrap;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:12px;
+width:230px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.card h3{
+margin:0;
+color:#27ae60;
+font-size:18px;
+}
+
+.card p{
+font-size:32px;
+font-weight:bold;
+margin-top:10px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.sidebar{
+width:200px;
+}
+
+.main{
+margin-left:200px;
+}
+
+.card{
+width:180px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h2>KisanMitra</h2>
+
+<button onclick="location.href='government-dashboard.html'">Dashboard</button>
+
+<button onclick="location.href='government-farmers.html'">Farmers</button>
+
+<button onclick="location.href='government-experts.html'">Experts</button>
+
+<button onclick="location.href='government-crops.html'">Crops</button>
+
+<button onclick="location.href='government-analytics.html'">Analytics</button>
+
+<button onclick="location.href='government-schemes.html'">Schemes</button>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+<button onclick="logout()">
+Logout
+</button>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="main">
+
+<h1>Agriculture Monitoring Dashboard</h1>
+
+<div class="cards">
+
+<div class="card">
+<h3>Total Farmers</h3>
+<p id="farmers">0</p>
+</div>
+
+<div class="card">
+<h3>Total Experts</h3>
+<p id="experts">0</p>
+</div>
+
+<div class="card">
+<h3>Total Crops</h3>
+<p id="crops">0</p>
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+// ===============================
+// LOAD DASHBOARD STATS
+// ===============================
+
+async function loadStats(){
+
+try{
+
+const farmers = await fetch(
+"http://localhost:5000/api/admin/farmers"
+).then(r=>r.json());
+
+const experts = await fetch(
+"http://localhost:5000/api/admin/experts"
+).then(r=>r.json());
+
+const crops = await fetch(
+"http://localhost:5000/api/admin/crops"
+).then(r=>r.json());
+
+document.getElementById("farmers").innerText = farmers.length;
+document.getElementById("experts").innerText = experts.length;
+document.getElementById("crops").innerText = crops.length;
+
+}
+catch(error){
+
+console.log("Dashboard load error:",error);
+
+}
+
+}
+
+
+// ===============================
+// LOGOUT
+// ===============================
+
+function logout(){
+
+localStorage.clear();
+window.location.href="login.html";
+
+}
+
+
+// LOAD DATA
+
+loadStats();
+
+</script>
+
+</body>
+</html>

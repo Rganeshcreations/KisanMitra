@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Crops - KisanMitra</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:
+linear-gradient(rgba(34,139,34,0.6),rgba(0,0,0,0.7)),
+url("images/farmer-bg.jpg");
+background-size:cover;
+background-attachment:fixed;
+color:white;
+}
+
+/* HEADER */
+.header{
+text-align:center;
+padding:25px;
+font-size:28px;
+font-weight:bold;
+}
+
+/* CONTAINER */
+.container{
+width:85%;
+margin:auto;
+}
+
+/* CARD STYLE */
+.card{
+background:rgba(255,255,255,0.15);
+padding:20px;
+margin:20px 0;
+border-radius:20px;
+backdrop-filter:blur(12px);
+box-shadow:0 8px 20px rgba(0,0,0,0.4);
+cursor:pointer;
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.03);
+background:rgba(255,255,255,0.25);
+}
+
+/* TEXT */
+.card h3{
+margin:0;
+font-size:22px;
+}
+
+.card p{
+margin:8px 0;
+color:#e0e0e0;
+}
+
+/* BUTTON */
+.add-btn{
+display:block;
+margin:20px auto;
+padding:12px 25px;
+border:none;
+border-radius:25px;
+background:#4CAF50;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.add-btn:hover{
+background:#2e7d32;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">🌾 My Crops</div>
+
+<div class="container" id="cropList"></div>
+
+<button class="add-btn" onclick="addCrop()">➕ Add New Crop</button>
+
+<script>
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+window.location.href="login.html";
+}
+
+// =======================
+// LOAD CROPS
+// =======================
+
+async function loadCrops(){
+
+const res = await fetch(
+"http://localhost:5000/api/users/get-crops/"+user.id
+);
+
+const crops = await res.json();
+
+const container = document.getElementById("cropList");
+
+container.innerHTML = "";
+
+// if no crops
+if(crops.length === 0){
+container.innerHTML = "<p>No crops added yet 🌱</p>";
+return;
+}
+
+crops.forEach(c=>{
+
+container.innerHTML += `
+<div class="card" onclick="openCrop(${c.id})">
+
+<h3>${c.crop_name}</h3>
+
+<p>📏 Land Size: ${c.land_size} acres</p>
+
+<p>📅 Seeding Date: ${formatDate(c.seeding_date)}</p>
+
+</div>
+`;
+
+});
+
+}
+
+
+// =======================
+// OPEN CROP DETAILS
+// =======================
+
+function openCrop(id){
+window.location.href = "crop.html?crop_id="+id;
+}
+
+
+// =======================
+// ADD NEW CROP
+// =======================
+
+function addCrop(){
+window.location.href = "add-crop.html";
+}
+
+
+// =======================
+// FORMAT DATE
+// =======================
+
+function formatDate(date){
+return new Date(date).toLocaleDateString();
+}
+
+
+// LOAD DATA
+loadCrops();
+
+</script>
+
+</body>
+</html>

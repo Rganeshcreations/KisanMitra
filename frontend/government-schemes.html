@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Government Schemes</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f9;
+margin:0;
+}
+
+.sidebar{
+width:260px;
+height:100vh;
+background:#1f2d3d;
+position:fixed;
+color:white;
+padding-top:20px;
+}
+
+.sidebar button{
+width:85%;
+margin:12px auto;
+display:block;
+padding:12px;
+border:none;
+background:#34495e;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+.main{
+margin-left:260px;
+padding:30px;
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+margin:10px 0;
+}
+
+button.add{
+background:#27ae60;
+color:white;
+border:none;
+padding:10px 20px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>KisanMitra</h2>
+
+<button onclick="location.href='government-dashboard.html'">Dashboard</button>
+<button onclick="location.href='government-farmers.html'">Farmers</button>
+<button onclick="location.href='government-experts.html'">Experts</button>
+<button onclick="location.href='government-crops.html'">Crops</button>
+<button onclick="location.href='government-analytics.html'">Analytics</button>
+<button onclick="location.href='government-schemes.html'">Schemes</button>
+
+</div>
+
+
+<div class="main">
+
+<h2>Add Government Scheme</h2>
+
+<input id="title" placeholder="Scheme Title">
+
+<textarea id="description" placeholder="Description"></textarea>
+
+<textarea id="eligibility" placeholder="Eligibility"></textarea>
+
+<input id="link" placeholder="Official Link">
+
+<button class="add" onclick="addScheme()">Add Scheme</button>
+
+<p id="msg"></p>
+
+</div>
+
+<script>
+
+async function addScheme(){
+
+const title=document.getElementById("title").value;
+const description=document.getElementById("description").value;
+const eligibility=document.getElementById("eligibility").value;
+const official_link=document.getElementById("link").value;
+
+const res=await fetch(
+"http://localhost:5000/api/users/government/add-scheme",
+{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+title,
+description,
+eligibility,
+official_link
+})
+}
+);
+
+const data=await res.json();
+
+document.getElementById("msg").innerText=data.message;
+
+}
+
+</script>
+
+</body>
+</html>

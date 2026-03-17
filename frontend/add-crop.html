@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Crop</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:
+linear-gradient(rgba(34,139,34,0.6),rgba(0,0,0,0.7)),
+url("images/farmer-bg.jpg");
+background-size:cover;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.form-box{
+background:rgba(255,255,255,0.15);
+padding:30px;
+border-radius:20px;
+width:350px;
+backdrop-filter:blur(15px);
+text-align:center;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:10px;
+border:none;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:20px;
+background:#4CAF50;
+color:white;
+cursor:pointer;
+}
+
+.back{
+background:red;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="form-box">
+
+<h2>🌱 Add Crop</h2>
+
+<input type="text" id="crop_name" placeholder="Crop Name">
+<input type="date" id="seeding_date">
+<input type="number" id="land_size" placeholder="Land Size">
+
+<button onclick="addCrop()">Save</button>
+<button class="back" onclick="goBack()">Back</button>
+
+</div>
+
+<script>
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+async function addCrop(){
+
+const crop_name = document.getElementById("crop_name").value;
+const seeding_date = document.getElementById("seeding_date").value;
+const land_size = document.getElementById("land_size").value;
+
+if(!crop_name || !seeding_date || !land_size){
+alert("Fill all fields");
+return;
+}
+
+await fetch("http://localhost:5000/api/users/add-crop",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+user_id:user.id,
+crop_name,
+seeding_date,
+land_size
+})
+});
+
+alert("Crop added");
+window.location.href="crop-list.html";
+
+}
+
+function goBack(){
+window.location.href="crop-list.html";
+}
+
+</script>
+
+</body>
+</html>

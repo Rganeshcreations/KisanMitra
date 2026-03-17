@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Admin Public Users - KisanMitra</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+}
+
+.sidebar{
+width:250px;
+height:100vh;
+background:#2c3e50;
+position:fixed;
+color:white;
+padding-top:20px;
+}
+
+.sidebar h2{
+text-align:center;
+margin-bottom:30px;
+}
+
+.sidebar button{
+width:90%;
+margin:10px;
+padding:12px;
+border:none;
+background:#34495e;
+color:white;
+cursor:pointer;
+border-radius:5px;
+}
+
+.sidebar button:hover{
+background:#1abc9c;
+}
+
+.main{
+margin-left:260px;
+padding:30px;
+}
+
+.header{
+font-size:28px;
+margin-bottom:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+padding:12px;
+border:1px solid #ddd;
+text-align:left;
+}
+
+th{
+background:#1abc9c;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>Admin Panel</h2>
+
+<button onclick="location.href='admin-dashboard.html'">Dashboard</button>
+<button onclick="location.href='admin-farmers.html'">Farmers</button>
+<button onclick="location.href='admin-experts.html'">Experts</button>
+<button onclick="location.href='admin-users.html'">Public Users</button>
+<button onclick="location.href='admin-crops.html'">Crops</button>
+<button onclick="location.href='admin-expenditures.html'">Expenditures</button>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+
+<div class="main">
+
+<div class="header">
+Public Users
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Email</th>
+</tr>
+</thead>
+
+<tbody id="usersTable">
+</tbody>
+
+</table>
+
+</div>
+
+
+<script>
+
+async function loadUsers(){
+
+const res = await fetch("http://localhost:5000/api/admin/public-users");
+
+const users = await res.json();
+
+let table="";
+
+users.forEach(u=>{
+
+table+=`
+<tr>
+<td>${u.id}</td>
+<td>${u.name}</td>
+<td>${u.email}</td>
+</tr>
+`;
+
+});
+
+document.getElementById("usersTable").innerHTML=table;
+
+}
+
+function logout(){
+
+localStorage.clear();
+window.location.href="login.html";
+
+}
+
+loadUsers();
+
+</script>
+
+</body>
+
+</html>

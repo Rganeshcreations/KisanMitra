@@ -1,19 +1,46 @@
+// ==============================
+// IMPORT MYSQL
+// ==============================
+
 const mysql = require("mysql2");
+require("dotenv").config();
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",       // your MySQL username
-  password: "Ganesh@123", // your MySQL password
-  database: "kisanmitra_db"
+
+// ==============================
+// CREATE CONNECTION POOL
+// ==============================
+
+const db = mysql.createPool({
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "Ganesh@123",
+  database: process.env.DB_NAME || "kisanmitra_db",
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-db.connect((err) => {
+
+// ==============================
+// TEST CONNECTION
+// ==============================
+
+db.getConnection((err, connection) => {
+
   if (err) {
-    console.log("Database connection failed ❌");
-    console.error(err);
-  } else {
-    console.log("MySQL connected successfully ✅");
+    console.error("❌ MySQL Connection Failed:", err);
+    return;
   }
+
+  console.log("✅ MySQL Connected Successfully");
+
+  connection.release();
+
 });
+
+
+// ==============================
+// EXPORT DATABASE
+// ==============================
 
 module.exports = db;

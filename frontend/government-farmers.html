@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Government Farmers</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+}
+
+.sidebar{
+width:240px;
+height:100vh;
+background:#1f2d3d;
+position:fixed;
+color:white;
+padding-top:20px;
+}
+
+.sidebar h2{
+text-align:center;
+margin-bottom:20px;
+}
+
+.sidebar button{
+width:90%;
+margin:10px;
+padding:12px;
+border:none;
+background:#34495e;
+color:white;
+cursor:pointer;
+border-radius:6px;
+}
+
+.main{
+margin-left:250px;
+padding:30px;
+}
+
+table{
+width:100%;
+background:white;
+border-collapse:collapse;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #eee;
+}
+
+th{
+background:#2e7d32;
+color:white;
+}
+
+.view-btn{
+background:#1976d2;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:5px;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+<h2>Government Panel</h2>
+<button onclick="location.href='government-dashboard.html'">Dashboard</button>
+<button onclick="location.href='government-farmers.html'">Farmers</button>
+<button onclick="location.href='government-experts.html'">Experts</button>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="main">
+
+<h2>Farmer Monitoring</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Location</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="farmersTable"></tbody>
+</table>
+
+</div>
+
+<script>
+
+async function loadFarmers(){
+const res = await fetch("http://localhost:5000/api/admin/farmers");
+const farmers = await res.json();
+
+let html="";
+
+farmers.forEach(f=>{
+html+=`
+<tr>
+<td>${f.name}</td>
+<td>${f.email}</td>
+<td>${f.location || "-"}</td>
+<td>
+<button class="view-btn" onclick="viewFarmer(${f.id})">View</button>
+</td>
+</tr>
+`;
+});
+
+document.getElementById("farmersTable").innerHTML = html;
+}
+
+function viewFarmer(id){
+window.location.href = `government-farmer-view.html?id=${id}`;
+}
+
+function logout(){
+localStorage.clear();
+window.location.href="login.html";
+}
+
+loadFarmers();
+
+</script>
+
+</body>
+</html>

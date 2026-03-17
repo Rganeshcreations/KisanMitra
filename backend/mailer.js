@@ -1,16 +1,29 @@
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
+
   host: "smtp.gmail.com",
   port: 587,
   secure: false, // use TLS
+
   auth: {
-    user: "kishanmitra315@gmail.com",
-    pass: "hbxmoyzdfduwgnnh"
-  },
-  tls: {
-    rejectUnauthorized: false
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
+
+});
+
+transporter.verify((error, success) => {
+
+  if (error) {
+    console.log("❌ Mail server connection failed");
+    console.log(error);
+  } 
+  else {
+    console.log("✅ Mail server ready");
+  }
+
 });
 
 module.exports = transporter;

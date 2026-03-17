@@ -20,6 +20,8 @@
 <option value="farmer">Farmer</option>
 <option value="expert">Expert</option>
 <option value="public">Public</option>
+<option value="government">Government</option>
+<option value="admin">Admin</option>
 </select>
 
 <input type="password" id="password" placeholder="Password">
@@ -39,6 +41,7 @@
 <option value="farmer">Farmer</option>
 <option value="expert">Expert</option>
 <option value="public">Public</option>
+<option value="government">Government</option>
 </select>
 
 <button onclick="sendOtp()">Send OTP</button>
@@ -52,11 +55,9 @@
 </div>
 
 
-
 <script>
 
 const API = "http://localhost:5000/api/users";
-
 
 
 // ===============================
@@ -101,11 +102,11 @@ return;
 
 }
 
-// store user
+// save logged user
 localStorage.setItem("user", JSON.stringify(data.user));
 
 // redirect
-redirectUser(role, data.profileExists);
+redirectUser(data.user.role, data.profileExists);
 
 }
 catch(error){
@@ -210,7 +211,7 @@ return;
 localStorage.setItem("user", JSON.stringify(data.user));
 
 // redirect
-redirectUser(role, data.profileExists);
+redirectUser(data.user.role, data.profileExists);
 
 }
 catch(error){
@@ -229,9 +230,10 @@ document.getElementById("message").innerText = "OTP verification failed";
 
 function redirectUser(role, profileExists){
 
-// ensure boolean
 profileExists = profileExists === true;
 
+
+// FARMER
 if(role === "farmer"){
 
 if(profileExists){
@@ -243,6 +245,8 @@ window.location.href = "farmer-profile.html";
 
 }
 
+
+// EXPERT
 else if(role === "expert"){
 
 if(profileExists){
@@ -254,9 +258,37 @@ window.location.href = "expert-profile.html";
 
 }
 
-else{
 
-window.location.href = "public.html";
+// PUBLIC
+else if(role === "public"){
+
+if(profileExists){
+window.location.href = "public-dashboard.html";
+}
+else{
+window.location.href = "public-profile.html";
+}
+
+}
+
+
+// GOVERNMENT
+else if(role === "government"){
+
+if(profileExists){
+window.location.href = "government-dashboard.html";
+}
+else{
+window.location.href = "government-profile.html";
+}
+
+}
+
+
+// ADMIN
+else if(role === "admin"){
+
+window.location.href = "admin-dashboard.html";
 
 }
 

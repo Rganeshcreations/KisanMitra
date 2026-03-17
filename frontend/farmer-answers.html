@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>My Questions</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+padding:40px;
+}
+
+table{
+width:100%;
+background:white;
+border-collapse:collapse;
+}
+
+th{
+background:#2e7d32;
+color:white;
+}
+
+th,td{
+padding:12px;
+border:1px solid #ddd;
+}
+
+.pending{
+color:orange;
+font-weight:bold;
+}
+
+.answered{
+color:green;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>My Questions & Expert Answers</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>Expert</th>
+<th>Question</th>
+<th>Answer</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="table"></tbody>
+
+</table>
+
+<script>
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+async function loadQuestions(){
+
+const res = await fetch(
+"http://localhost:5000/api/users/farmer-questions/"+user.id
+);
+
+const questions = await res.json();
+
+const table=document.getElementById("table");
+
+table.innerHTML="";
+
+questions.forEach(q=>{
+
+table.innerHTML+=`
+<tr>
+
+<td>${q.expert_name || "-"}</td>
+
+<td>${q.question}</td>
+
+<td>${q.answer || "Waiting for expert reply..."}</td>
+
+<td class="${q.status}">
+${q.status}
+</td>
+
+</tr>
+`;
+
+});
+
+}
+
+loadQuestions();
+
+</script>
+
+</body>
+</html>

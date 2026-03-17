@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Farmer Details</title>
+
+<style>
+body{font-family:Arial;background:#f4f6f9;margin:0;}
+.main{padding:30px;}
+
+.profile{
+position:absolute;
+top:20px;
+right:20px;
+}
+
+.profile img{
+width:80px;
+height:80px;
+border-radius:50%;
+cursor:pointer;
+}
+
+.card{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="profile">
+<img src="https://via.placeholder.com/80" onclick="openProfile()">
+</div>
+
+<div class="main">
+
+<h2>Farmer Details</h2>
+
+<div class="card">
+<h3>Basic Info</h3>
+<p id="info"></p>
+</div>
+
+<div class="card">
+<h3>Crops</h3>
+<div id="crops"></div>
+</div>
+
+<div class="card">
+<h3>Expenses</h3>
+<div id="expenses"></div>
+</div>
+
+<div class="card">
+<h3>Profit</h3>
+<p id="profit"></p>
+</div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const userId = params.get("id");
+const name = params.get("name");
+
+// 🔥 PROFILE BUTTON
+function openProfile(){
+localStorage.setItem("viewFarmerId", userId);
+localStorage.setItem("viewFarmerName", name);
+window.location.href = "farmer-view.html";
+}
+
+// LOAD DATA
+async function loadData(){
+
+const profile = await fetch(
+`http://localhost:5000/api/users/farmer-profile/${userId}`
+).then(r=>r.json());
+
+document.getElementById("info").innerText =
+`Location: ${profile.location}, Soil: ${profile.soil_type}`;
+
+const crops = await fetch(
+`http://localhost:5000/api/users/get-crops/${userId}`
+).then(r=>r.json());
+
+let cropHtml="";
+let expenseHtml="";
+
+for(let c of crops){
+
+let revenue = (c.quantity_produced||0)*(c.selling_price||0);
+
+cropHtml += `<p>${c.crop_name} | ${c.land_size} Acres | ₹${revenue}</p>`;
+
+const exp = await fetch(
+`http://localhost:5000/api/users/get-expenditures/${c.id}`
+).then(r=>r.json());
+
+let total=0;
+exp.forEach(e=>total+=parseFloat(e.total_amount||0));
+
+expenseHtml += `<p>${c.crop_name}: ₹${total}</p>`;
+}
+
+document.getElementById("crops").innerHTML = cropHtml;
+document.getElementById("expenses").innerHTML = expenseHtml;
+
+// PROFIT
+const summary = await fetch(
+`http://localhost:5000/api/users/farmer-dashboard/${userId}`
+).then(r=>r.json());
+
+document.getElementById("profit").innerText =
+`Profit: ₹ ${summary.profit}`;
+
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Agriculture Experts</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:
+linear-gradient(rgba(34,139,34,0.6),rgba(0,0,0,0.7)),
+url("images/farmer-bg.jpg");
+background-size:cover;
+color:white;
+padding:40px;
+}
+
+h1{
+text-align:center;
+margin-bottom:40px;
+}
+
+.container{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+.card{
+background:rgba(255,255,255,0.15);
+padding:20px;
+border-radius:15px;
+backdrop-filter:blur(10px);
+box-shadow:0 6px 20px rgba(0,0,0,0.3);
+}
+
+.card h3{
+margin-top:0;
+}
+
+.card button{
+margin-top:10px;
+padding:10px 16px;
+background:#2e7d32;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.card button:hover{
+background:#1b5e20;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Available Agriculture Experts</h1>
+
+<div class="container" id="expertsContainer"></div>
+
+<script>
+
+async function loadExperts(){
+
+const res = await fetch(
+"http://localhost:5000/api/users/experts"
+);
+
+const experts = await res.json();
+
+const container = document.getElementById("expertsContainer");
+
+experts.forEach(expert=>{
+
+container.innerHTML += `
+<div class="card">
+
+<h3>${expert.name}</h3>
+
+<p><b>Specialization:</b> ${expert.specialization}</p>
+<p><b>Experience:</b> ${expert.experience} years</p>
+<p><b>Qualification:</b> ${expert.qualification}</p>
+<p><b>Location:</b> ${expert.location}</p>
+
+<button onclick="selectExpert(${expert.id})">
+Ask Question
+</button>
+
+</div>
+`;
+
+});
+
+}
+
+function selectExpert(id){
+
+localStorage.setItem("selectedExpert",id);
+
+window.location.href="ask-expert.html";
+
+}
+
+loadExperts();
+
+</script>
+
+</body>
+</html>

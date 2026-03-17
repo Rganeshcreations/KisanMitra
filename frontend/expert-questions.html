@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Farmer Questions</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+padding:40px;
+}
+
+table{
+width:100%;
+background:white;
+border-collapse:collapse;
+}
+
+th{
+background:#2e7d32;
+color:white;
+}
+
+th,td{
+padding:12px;
+border:1px solid #ddd;
+}
+
+textarea{
+width:100%;
+height:60px;
+}
+
+button{
+background:#2e7d32;
+color:white;
+border:none;
+padding:8px 14px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Farmer Questions</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>Farmer</th>
+<th>Question</th>
+<th>Answer</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="questionTable"></tbody>
+
+</table>
+
+<script>
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+async function loadQuestions(){
+
+const res = await fetch(
+"http://localhost:5000/api/users/expert-questions/"+user.id
+);
+
+const questions = await res.json();
+
+const table=document.getElementById("questionTable");
+
+table.innerHTML="";
+
+if(questions.length===0){
+table.innerHTML="<tr><td colspan='4'>No questions yet</td></tr>";
+return;
+}
+
+questions.forEach(q=>{
+
+table.innerHTML+=`
+<tr>
+
+<td>${q.farmer_name}</td>
+
+<td>${q.question}</td>
+
+<td>
+<textarea id="answer_${q.id}">
+${q.answer || ""}
+</textarea>
+
+</td>
+
+<td>
+<button onclick="sendAnswer(${q.id})">
+Submit
+</button>
+</td>
+
+</tr>
+`;
+
+});
+
+}
+
+async function sendAnswer(id){
+
+const answer=document.getElementById("answer_"+id).value;
+
+await fetch(
+"http://localhost:5000/api/users/answer-question",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+question_id:id,
+expert_id:user.id,
+answer
+})
+}
+);
+
+alert("Answer submitted");
+
+loadQuestions();
+
+}
+
+loadQuestions();
+
+</script>
+
+</body>
+</html>
+

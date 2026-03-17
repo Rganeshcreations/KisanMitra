@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Public Profile - KisanMitra</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:url("images/farm-bg.jpg") no-repeat center center/cover;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.profile-card{
+background:rgba(255,255,255,0.95);
+padding:40px;
+width:450px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+.profile-card h1{
+color:#2e7d32;
+margin-bottom:20px;
+}
+
+.profile-card input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+.profile-card button{
+width:100%;
+padding:12px;
+margin-top:15px;
+border:none;
+border-radius:8px;
+background-color:#2e7d32;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.profile-card button:hover{
+background-color:#1b5e20;
+}
+
+.profile-card img{
+width:100px;
+height:100px;
+border-radius:50%;
+margin-bottom:10px;
+object-fit:cover;
+border:3px solid #2e7d32;
+}
+
+#message{
+margin-top:10px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="profile-card">
+
+<h1>🌾 Complete Your Public Profile</h1>
+
+<img id="photoPreview"
+src="https://via.placeholder.com/100"
+alt="Public Photo">
+
+<input type="file" id="photo" accept="image/*" onchange="previewPhoto()">
+
+<input type="text" id="phone" placeholder="Phone Number">
+<input type="text" id="location" placeholder="Location">
+<input type="text" id="interests" placeholder="Interested Crops (Rice, Wheat etc)">
+
+<button onclick="savePublicProfile()">Save Profile</button>
+
+<p id="message"></p>
+
+</div>
+
+
+<script>
+
+// =======================
+// LOGIN CHECK
+// =======================
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+
+alert("Please login first");
+
+window.location.href="login.html";
+
+}
+
+
+// =======================
+// IMAGE PREVIEW
+// =======================
+
+function previewPhoto(){
+
+const file=document.getElementById("photo").files[0];
+const preview=document.getElementById("photoPreview");
+
+if(file){
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+preview.src=e.target.result;
+}
+
+reader.readAsDataURL(file);
+
+}
+
+}
+
+
+// =======================
+// SAVE PUBLIC PROFILE
+// =======================
+
+async function savePublicProfile(){
+
+const phone=document.getElementById("phone").value;
+const location=document.getElementById("location").value;
+const interests=document.getElementById("interests").value;
+
+if(!phone || !location || !interests){
+
+document.getElementById("message").innerText="Please fill all fields";
+return;
+
+}
+
+const res=await fetch(
+"http://localhost:5000/api/users/public-profile",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+user_id:user.id,
+phone,
+location,
+interests
+})
+}
+);
+
+const data=await res.json();
+
+document.getElementById("message").innerText=data.message;
+
+if(res.ok){
+
+setTimeout(()=>{
+window.location.href="public-dashboard.html";
+},1500);
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

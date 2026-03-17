@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>AI Farming Assistant</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(rgba(0,100,0,0.6), rgba(0,0,0,0.7)),
+url("images/farm-bg.jpg");
+background-size:cover;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.chat-container{
+width:520px;
+background:rgba(0,0,0,0.65);
+padding:20px;
+border-radius:15px;
+}
+
+#chat{
+height:360px;
+overflow-y:auto;
+background:white;
+color:black;
+padding:12px;
+border-radius:10px;
+margin-bottom:12px;
+}
+
+.message{
+margin:10px 0;
+}
+
+.user{
+text-align:right;
+color:#0d47a1;
+}
+
+.ai{
+text-align:left;
+color:#1b5e20;
+}
+
+.input-area{
+display:flex;
+gap:8px;
+}
+
+input{
+flex:1;
+padding:10px;
+border:none;
+border-radius:8px;
+}
+
+button{
+padding:10px 16px;
+border:none;
+background:#2e7d32;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1b5e20;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="chat-container">
+
+<h2>🤖 AI Farming Assistant</h2>
+
+<div id="chat"></div>
+
+<div class="input-area">
+<input id="message" placeholder="Ask about crops, pests, fertilizers..." />
+<button onclick="sendMessage()">Send</button>
+</div>
+
+</div>
+
+<script>
+
+const chat=document.getElementById("chat");
+const input=document.getElementById("message");
+
+async function sendMessage(){
+
+const text=input.value.trim();
+
+if(!text) return;
+
+chat.innerHTML += `<div class="message user"><b>You:</b> ${text}</div>`;
+
+input.value="";
+
+try{
+
+const res = await fetch("http://localhost:5000/api/users/ai-chat",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({message:text})
+});
+
+const data = await res.json();
+
+chat.innerHTML += `<div class="message ai"><b>AI:</b> ${data.reply}</div>`;
+
+chat.scrollTop = chat.scrollHeight;
+
+}
+catch(err){
+
+chat.innerHTML += `<div class="message ai">AI service error</div>`;
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

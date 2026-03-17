@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Public Dashboard - KisanMitra</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+}
+
+/* Navbar */
+.navbar{
+background:#2c3e50;
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+}
+
+.navbar button{
+background:#e74c3c;
+border:none;
+padding:8px 12px;
+color:white;
+cursor:pointer;
+border-radius:4px;
+}
+
+/* Main */
+.main{
+padding:30px;
+}
+
+/* Cards */
+.cards{
+display:flex;
+gap:20px;
+margin-bottom:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+flex:1;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Search */
+.search-box{
+margin-bottom:20px;
+}
+
+.search-box input{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* Table */
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+padding:12px;
+border:1px solid #ddd;
+}
+
+th{
+background:#27ae60;
+color:white;
+}
+
+.like-btn{
+background:#3498db;
+color:white;
+border:none;
+padding:5px 10px;
+cursor:pointer;
+border-radius:5px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+<h2>KisanMitra Public Portal</h2>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="main">
+
+<h1>🌾 Farmer Crops</h1>
+
+<!-- Summary Cards -->
+<div class="cards">
+<div class="card">Total Crops: <span id="totalCrops">0</span></div>
+<div class="card">Avg Price: ₹ <span id="avgPrice">0</span></div>
+</div>
+
+<!-- Search -->
+<div class="search-box">
+<input type="text" id="search" placeholder="Search farmer or crop..." onkeyup="filterTable()">
+</div>
+
+<!-- Table -->
+<table>
+<thead>
+<tr>
+<th>Farmer</th>
+<th>Crop</th>
+<th>Days</th>
+<th>Land</th>
+<th>Quantity</th>
+<th>Price</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="cropsTable"></tbody>
+
+</table>
+
+</div>
+
+<script>
+
+let allCrops = [];
+
+// LOAD DATA
+async function loadCrops(){
+
+const res = await fetch("http://localhost:5000/api/admin/crops");
+const crops = await res.json();
+
+allCrops = crops;
+
+renderTable(crops);
+updateSummary(crops);
+
+}
+
+// RENDER TABLE
+function renderTable(crops){
+
+let table="";
+
+crops.forEach(c=>{
+
+const days = Math.floor(
+(new Date() - new Date(c.seeding_date)) / (1000*60*60*24)
+);
+
+table+=`
+<tr>
+<td>${c.farmer_name}</td>
+<td>${c.crop_name}</td>
+<td>${days} days</td>
+<td>${c.land_size} Acres</td>
+<td>${c.quantity_produced || 0} kg</td>
+<td>₹ ${c.selling_price || 0}</td>
+<td><button class="like-btn" onclick="likeCrop()">❤️</button></td>
+</tr>
+`;
+
+});
+
+document.getElementById("cropsTable").innerHTML = table;
+
+}
+
+// SUMMARY
+function updateSummary(crops){
+
+document.getElementById("totalCrops").innerText = crops.length;
+
+let totalPrice = 0;
+
+crops.forEach(c=>{
+totalPrice += c.selling_price || 0;
+});
+
+document.getElementById("avgPrice").innerText =
+(crops.length ? (totalPrice / crops.length).toFixed(2) : 0);
+
+}
+
+// SEARCH FILTER
+function filterTable(){
+
+const search = document.getElementById("search").value.toLowerCase();
+
+const filtered = allCrops.filter(c =>
+c.crop_name.toLowerCase().includes(search) ||
+c.farmer_name.toLowerCase().includes(search)
+);
+
+renderTable(filtered);
+
+}
+
+// LIKE BUTTON
+function likeCrop(){
+alert("Interest recorded!");
+}
+
+// LOGOUT
+function logout(){
+localStorage.clear();
+window.location.href="login.html";
+}
+
+loadCrops();
+
+</script>
+
+</body>
+</html>

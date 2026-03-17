@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Government Schemes</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f9;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border:1px solid #ddd;
+}
+
+th{
+background:#27ae60;
+color:white;
+}
+
+button{
+background:#27ae60;
+color:white;
+border:none;
+padding:6px 12px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Government Schemes</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Title</th>
+<th>Description</th>
+<th>Eligibility</th>
+<th>Link</th>
+<th>Apply</th>
+</tr>
+
+</thead>
+
+<tbody id="schemesTable"></tbody>
+
+</table>
+
+<script>
+
+const user=JSON.parse(localStorage.getItem("user"));
+
+async function loadSchemes(){
+
+const res=await fetch(
+"http://localhost:5000/api/users/government/schemes"
+);
+
+const schemes=await res.json();
+
+let html="";
+
+schemes.forEach(s=>{
+
+html+=`
+<tr>
+<td>${s.title}</td>
+<td>${s.description}</td>
+<td>${s.eligibility}</td>
+<td>
+<a href="${s.official_link}" target="_blank">View</a>
+</td>
+<td>
+<button onclick="applyScheme(${s.id})">Apply</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById("schemesTable").innerHTML=html;
+
+}
+
+async function applyScheme(id){
+
+await fetch(
+"http://localhost:5000/api/users/farmer/apply-scheme",
+{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+farmer_id:user.id,
+scheme_id:id
+})
+}
+);
+
+alert("Application submitted successfully");
+
+}
+
+loadSchemes();
+
+</script>
+
+</body>
+</html>
