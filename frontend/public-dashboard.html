@@ -19,6 +19,13 @@ color:white;
 padding:15px;
 display:flex;
 justify-content:space-between;
+align-items:center;
+}
+
+.nav-right{
+display:flex;
+align-items:center;
+gap:15px;
 }
 
 .navbar button{
@@ -28,6 +35,16 @@ padding:8px 12px;
 color:white;
 cursor:pointer;
 border-radius:4px;
+}
+
+/* Profile Image */
+.profile-img{
+width:40px;
+height:40px;
+border-radius:50%;
+border:2px solid white;
+cursor:pointer;
+object-fit:cover;
 }
 
 /* Main */
@@ -95,7 +112,15 @@ border-radius:5px;
 
 <div class="navbar">
 <h2>KisanMitra Public Portal</h2>
+
+<div class="nav-right">
+
+<!-- ✅ PROFILE IMAGE -->
+<img src="images/ganesh.jpg" class="profile-img" onclick="goToProfile()">
+
 <button onclick="logout()">Logout</button>
+
+</div>
 </div>
 
 <div class="main">
@@ -137,7 +162,10 @@ border-radius:5px;
 
 let allCrops = [];
 
+// =====================
 // LOAD DATA
+// =====================
+
 async function loadCrops(){
 
 const res = await fetch("http://localhost:5000/api/admin/crops");
@@ -150,7 +178,10 @@ updateSummary(crops);
 
 }
 
+// =====================
 // RENDER TABLE
+// =====================
+
 function renderTable(crops){
 
 let table="";
@@ -179,7 +210,10 @@ document.getElementById("cropsTable").innerHTML = table;
 
 }
 
+// =====================
 // SUMMARY
+// =====================
+
 function updateSummary(crops){
 
 document.getElementById("totalCrops").innerText = crops.length;
@@ -187,7 +221,7 @@ document.getElementById("totalCrops").innerText = crops.length;
 let totalPrice = 0;
 
 crops.forEach(c=>{
-totalPrice += c.selling_price || 0;
+totalPrice += Number(c.selling_price) || 0; // ✅ FIXED
 });
 
 document.getElementById("avgPrice").innerText =
@@ -195,7 +229,10 @@ document.getElementById("avgPrice").innerText =
 
 }
 
+// =====================
 // SEARCH FILTER
+// =====================
+
 function filterTable(){
 
 const search = document.getElementById("search").value.toLowerCase();
@@ -209,16 +246,34 @@ renderTable(filtered);
 
 }
 
+// =====================
+// PROFILE NAVIGATION
+// =====================
+
+function goToProfile(){
+window.location.href = "public-profile-view.html";
+}
+
+// =====================
 // LIKE BUTTON
+// =====================
+
 function likeCrop(){
 alert("Interest recorded!");
 }
 
+// =====================
 // LOGOUT
+// =====================
+
 function logout(){
 localStorage.clear();
 window.location.href="login.html";
 }
+
+// =====================
+// INIT
+// =====================
 
 loadCrops();
 

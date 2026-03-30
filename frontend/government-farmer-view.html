@@ -1,130 +1,1197 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Farmer Details</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farmer Details – AgriGov Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:Arial;background:#f4f6f9;margin:0;}
-.main{padding:30px;}
-
-.profile{
-position:absolute;
-top:20px;
-right:20px;
+:root {
+  --navy:     #0a2a5e;
+  --navy-mid: #113372;
+  --navy-lt:  #1a4494;
+  --saffron:  #e07b00;
+  --saffron-lt:#f5a623;
+  --green:    #1a7e37;
+  --green-lt: #22a84a;
+  --white:    #ffffff;
+  --off-white:#f5f7fa;
+  --border:   #ccd4e0;
+  --text:     #1a2340;
+  --muted:    #5a6480;
+  --shadow:   0 2px 16px rgba(10,42,94,0.10);
+  --radius:   6px;
 }
 
-.profile img{
-width:80px;
-height:80px;
-border-radius:50%;
-cursor:pointer;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  min-height: 100vh;
 }
 
-.card{
-background:white;
-padding:20px;
-margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
+/* ── TOP RIBBON ── */
+.ribbon {
+  background: var(--saffron);
+  height: 5px;
+  width: 100%;
+}
+.ribbon-tri {
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, var(--saffron) 33.33%, var(--white) 33.33%, var(--white) 66.66%, var(--green) 66.66%);
 }
 
+/* ── MINISTRY HEADER ── */
+.gov-header {
+  background: var(--navy);
+  color: var(--white);
+  padding: 0;
+}
+.gov-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 30px;
+}
+.emblem-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.emblem-svg {
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.header-titles .ministry {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #a8c4e8;
+  font-weight: 400;
+}
+.header-titles .portal-name {
+  font-family: 'EB Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+}
+.header-titles .portal-sub {
+  font-size: 11.5px;
+  color: #80a8d8;
+  letter-spacing: 0.5px;
+}
+.header-right {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 40px;
+  padding: 5px 14px 5px 6px;
+  transition: background 0.2s;
+  color: var(--white);
+  text-decoration: none;
+}
+.profile-btn:hover { background: rgba(255,255,255,0.15); }
+.profile-btn img {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--saffron-lt);
+  object-fit: cover;
+}
+.profile-btn span { font-size: 13px; }
+.gov-id-badge {
+  font-size: 11px;
+  color: #80a8d8;
+  letter-spacing: 0.3px;
+}
+
+/* ── NAV BAR ── */
+.nav-bar {
+  background: var(--navy-lt);
+  border-bottom: 3px solid var(--saffron);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.nav-item {
+  font-size: 13px;
+  color: #c5d8f0;
+  padding: 11px 18px;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: block;
+}
+.nav-item:hover { color: var(--white); background: rgba(255,255,255,0.07); }
+.nav-item.active {
+  color: var(--white);
+  border-bottom-color: var(--saffron);
+  font-weight: 600;
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── BREADCRUMB ── */
+.breadcrumb-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 9px 30px;
+  max-width: 100%;
+}
+.breadcrumb-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.breadcrumb-inner a { color: var(--navy-lt); text-decoration: none; }
+.breadcrumb-inner a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: #b0bacf; }
+
+/* ── PAGE TITLE BAR ── */
+.page-title-bar {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #1a4a9a 100%);
+  color: var(--white);
+  padding: 26px 30px 22px;
+  border-bottom: 4px solid var(--saffron);
+  position: relative;
+  overflow: hidden;
+}
+.page-title-bar::before {
+  content: '';
+  position: absolute;
+  right: -60px; top: -60px;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.page-title-bar::after {
+  content: '';
+  position: absolute;
+  right: 60px; bottom: -80px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+}
+.page-title-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+.page-title h1 {
+  font-family: 'EB Garamond', serif;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--white);
+}
+.page-title .subtitle {
+  font-size: 13px;
+  color: #a8c4e8;
+  margin-top: 3px;
+  letter-spacing: 0.3px;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(26,126,55,0.85);
+  border: 1px solid rgba(34,168,74,0.5);
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #b0f0c0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.status-dot {
+  width: 8px; height: 8px;
+  background: #22a84a;
+  border-radius: 50%;
+  animation: blink 1.4s infinite;
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ── MAIN LAYOUT ── */
+.main-wrap {
+  max-width: 1200px;
+  margin: 28px auto;
+  padding: 0 30px;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar { display: flex; flex-direction: column; gap: 20px; }
+.farmer-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.farmer-card-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-lt) 100%);
+  padding: 22px;
+  text-align: center;
+  position: relative;
+}
+.farmer-avatar-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.farmer-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--saffron);
+  object-fit: cover;
+  display: block;
+}
+.farmer-avatar-badge {
+  position: absolute;
+  bottom: 2px; right: 2px;
+  width: 20px; height: 20px;
+  background: var(--green);
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.farmer-avatar-badge svg { width: 10px; height: 10px; fill: white; }
+.farmer-name {
+  font-family: 'EB Garamond', serif;
+  font-size: 20px;
+  color: var(--white);
+  font-weight: 600;
+}
+.farmer-id {
+  font-size: 11.5px;
+  color: #80a8d8;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+.farmer-card-body { padding: 0; }
+.info-row {
+  display: flex;
+  align-items: center;
+  padding: 11px 18px;
+  border-bottom: 1px solid #eef1f6;
+  gap: 10px;
+  font-size: 13.5px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-row .label {
+  color: var(--muted);
+  font-size: 12px;
+  min-width: 90px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.info-row .value {
+  color: var(--text);
+  font-weight: 600;
+}
+.info-row .icon {
+  width: 28px; height: 28px;
+  background: var(--off-white);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* Quick Stats Sidebar */
+.quick-stats {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.qs-header {
+  background: var(--navy);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  border-bottom: 2px solid var(--saffron);
+}
+.qs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.qs-item {
+  padding: 16px 14px;
+  text-align: center;
+  border-right: 1px solid #eef1f6;
+  border-bottom: 1px solid #eef1f6;
+}
+.qs-item:nth-child(2n) { border-right: none; }
+.qs-item:nth-child(3), .qs-item:nth-child(4) { border-bottom: none; }
+.qs-value {
+  font-family: 'EB Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1;
+}
+.qs-label {
+  font-size: 10.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+.qs-value.green { color: var(--green); }
+.qs-value.saffron { color: var(--saffron); }
+
+/* ── RIGHT CONTENT ── */
+.content-col { display: flex; flex-direction: column; gap: 22px; }
+
+/* Section Block */
+.section-block {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--navy);
+  border-bottom: 2px solid var(--saffron);
+}
+.section-head h2 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-head h2 .icon { font-size: 15px; }
+.section-head .count-pill {
+  background: var(--saffron);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Table */
+.gov-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.gov-table thead th {
+  background: #e8edf5;
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.gov-table thead th:first-child { border-left: 3px solid var(--navy-lt); }
+.gov-table tbody tr {
+  border-bottom: 1px solid #eef1f6;
+  transition: background 0.15s;
+}
+.gov-table tbody tr:last-child { border-bottom: none; }
+.gov-table tbody tr:hover { background: #f0f5ff; }
+.gov-table td {
+  padding: 12px 16px;
+  color: var(--text);
+  vertical-align: middle;
+}
+.gov-table td .cell-label {
+  font-size: 10.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: block;
+  margin-bottom: 1px;
+}
+.gov-table td strong { font-weight: 700; color: var(--navy); }
+.gov-table .num { font-family: 'EB Garamond', serif; font-size: 15px; }
+.gov-table .rupee { color: var(--green); font-weight: 700; }
+.gov-table .rupee-red { color: #c0392b; font-weight: 700; }
+.crop-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.crop-icon-box {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.row-index {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--white);
+  font-size: 11.5px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Progress bar in table */
+.prod-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.prod-bar {
+  flex: 1;
+  height: 6px;
+  background: #e4e9f2;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.prod-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--green-lt));
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+.prod-bar-val { font-size: 12px; font-weight: 700; color: var(--navy); min-width: 60px; text-align: right; }
+
+/* Days badge */
+.days-badge {
+  background: #fff3e0;
+  color: var(--saffron);
+  border: 1px solid #ffe0b2;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  letter-spacing: 0.3px;
+}
+
+/* ── EXPENSE TABLE ── */
+.expense-row-even { background: #fafbfd; }
+.expense-total-row td {
+  background: #e8f0fe;
+  font-weight: 700;
+  color: var(--navy);
+  border-top: 2px solid var(--navy);
+}
+
+/* ── PROFIT SUMMARY TABLE ── */
+.profit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.profit-item {
+  padding: 22px 20px;
+  text-align: center;
+  border-right: 1px solid #eef1f6;
+  position: relative;
+}
+.profit-item:last-child { border-right: none; }
+.profit-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 20%; right: 20%;
+  height: 2px;
+  border-radius: 2px;
+}
+.profit-item.crops::after { background: var(--navy-lt); }
+.profit-item.expense::after { background: #c0392b; }
+.profit-item.revenue::after { background: var(--green); }
+.profit-item.profit::after { background: var(--saffron); }
+.profit-val {
+  font-family: 'EB Garamond', serif;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.profit-item.crops .profit-val { color: var(--navy-lt); }
+.profit-item.expense .profit-val { color: #c0392b; }
+.profit-item.revenue .profit-val { color: var(--green); }
+.profit-item.profit .profit-val { color: var(--saffron); }
+.profit-lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.profit-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+
+/* ── CHART ── */
+.chart-wrap {
+  padding: 24px;
+  background: var(--white);
+}
+.chart-inner { position: relative; height: 280px; }
+
+/* ── LOADING STATE ── */
+.loading-row td {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+.spinner {
+  width: 28px; height: 28px;
+  border: 3px solid #e4e9f2;
+  border-top-color: var(--navy-lt);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── FOOTER ── */
+.gov-footer {
+  background: var(--navy);
+  color: #80a8d8;
+  padding: 22px 30px;
+  margin-top: 40px;
+  border-top: 3px solid var(--saffron);
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-inner .copy { font-size: 12px; }
+.footer-links { display: flex; gap: 18px; }
+.footer-links a {
+  font-size: 12px;
+  color: #80a8d8;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--white); }
+
+/* ── RESPONSIVE ── */
+@media(max-width: 900px) {
+  .main-wrap { grid-template-columns: 1fr; }
+  .profit-grid { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width: 600px) {
+  .profit-grid { grid-template-columns: 1fr 1fr; }
+  .gov-header-inner { flex-wrap: wrap; }
+  .main-wrap { padding: 0 12px; }
+}
+
+/* Fade in animation */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.section-block { animation: fadeUp 0.5s ease both; }
+.section-block:nth-child(1) { animation-delay: 0.05s; }
+.section-block:nth-child(2) { animation-delay: 0.12s; }
+.section-block:nth-child(3) { animation-delay: 0.19s; }
+.section-block:nth-child(4) { animation-delay: 0.26s; }
+.sidebar .farmer-card { animation: fadeUp 0.4s ease both; }
+.sidebar .quick-stats { animation: fadeUp 0.4s ease 0.08s both; }
 </style>
 </head>
-
 <body>
 
-<div class="profile">
-<img src="https://via.placeholder.com/80" onclick="openProfile()">
+<!-- TRICOLOUR RIBBON -->
+<div class="ribbon-tri"></div>
+
+<!-- MINISTRY HEADER -->
+<header class="gov-header">
+  <div class="gov-header-inner">
+    <div class="emblem-wrap">
+      <!-- Ashoka Pillar SVG Emblem (simplified) -->
+      <svg class="emblem-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="38" fill="none" stroke="#c8a84b" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="32" fill="none" stroke="#c8a84b" stroke-width="0.6"/>
+        <!-- Lion body simplified -->
+        <ellipse cx="40" cy="34" rx="10" ry="8" fill="#c8a84b"/>
+        <circle cx="40" cy="26" r="6" fill="#c8a84b"/>
+        <!-- Mane lines -->
+        <path d="M33 26 Q28 22 30 18" stroke="#c8a84b" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M47 26 Q52 22 50 18" stroke="#c8a84b" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M35 23 Q30 19 32 15" stroke="#c8a84b" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M45 23 Q50 19 48 15" stroke="#c8a84b" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- Base / Abacus -->
+        <rect x="28" y="42" width="24" height="3.5" rx="1" fill="#c8a84b"/>
+        <!-- Pillar / Shaft -->
+        <rect x="36" y="45.5" width="8" height="16" rx="1" fill="#c8a84b" opacity="0.9"/>
+        <!-- Chakra -->
+        <circle cx="40" cy="53" r="5" fill="none" stroke="#0a2a5e" stroke-width="1.2"/>
+        <circle cx="40" cy="53" r="1" fill="#0a2a5e"/>
+        <!-- spokes -->
+        <g stroke="#0a2a5e" stroke-width="0.7">
+          <line x1="40" y1="48.2" x2="40" y2="57.8"/>
+          <line x1="35.2" y1="53" x2="44.8" y2="53"/>
+          <line x1="36.6" y1="49.6" x2="43.4" y2="56.4"/>
+          <line x1="43.4" y1="49.6" x2="36.6" y2="56.4"/>
+        </g>
+        <!-- Text base -->
+        <text x="40" y="68" text-anchor="middle" font-size="4.5" fill="#c8a84b" font-family="serif" letter-spacing="0.8">सत्यमेव जयते</text>
+      </svg>
+      <div class="header-titles">
+        <div class="ministry">Ministry of Agriculture &amp; Farmers' Welfare, Govt. of India</div>
+        <div class="portal-name">AgriGov Farmer Portal</div>
+        <div class="portal-sub">Integrated Agricultural Management &amp; Monitoring System</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <a class="profile-btn" href="farmer-view.html">
+        <img src="https://via.placeholder.com/80/0a2a5e/ffffff?text=F" alt="Profile">
+        <span>My Profile</span>
+      </a>
+      <div class="gov-id-badge" id="gov-id-badge">Farmer ID: —</div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV BAR -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a class="nav-item" href="#">Home</a>
+    <a class="nav-item active" href="#">Farmer Records</a>
+    <a class="nav-item" href="#">Crop Management</a>
+    <a class="nav-item" href="#">Financial Summary</a>
+    <a class="nav-item" href="#">Reports</a>
+    <a class="nav-item" href="#">Help &amp; Support</a>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb-bar">
+  <div class="breadcrumb-inner">
+    <a href="#">🏠 Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="#">Farmer Records</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Farmer Details</span>
+  </div>
 </div>
 
-<div class="main">
-
-<h2>Farmer Details</h2>
-
-<div class="card">
-<h3>Basic Info</h3>
-<p id="info"></p>
+<!-- PAGE TITLE -->
+<div class="page-title-bar">
+  <div class="page-title-inner">
+    <div class="page-title">
+      <h1>Farmer Comprehensive Record</h1>
+      <div class="subtitle" id="page-subtitle">Loading farmer information…</div>
+    </div>
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      Active &nbsp;·&nbsp; Verified
+    </div>
+  </div>
 </div>
 
-<div class="card">
-<h3>Crops</h3>
-<div id="crops"></div>
+<!-- MAIN LAYOUT -->
+<div class="main-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Farmer Profile Card -->
+    <div class="farmer-card">
+      <div class="farmer-card-header">
+        <div class="farmer-avatar-wrap">
+          <img class="farmer-avatar" src="https://via.placeholder.com/80/0a2a5e/ffffff?text=F" alt="Farmer">
+          <div class="farmer-avatar-badge">
+            <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </div>
+        </div>
+        <div class="farmer-name" id="sb-name">—</div>
+        <div class="farmer-id" id="sb-id">Loading…</div>
+      </div>
+      <div class="farmer-card-body">
+        <div class="info-row">
+          <div class="icon">📍</div>
+          <div>
+            <div class="label">Location</div>
+            <div class="value" id="sb-location">—</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="icon">🌱</div>
+          <div>
+            <div class="label">Soil Type</div>
+            <div class="value" id="sb-soil">—</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="icon">📅</div>
+          <div>
+            <div class="label">Record Date</div>
+            <div class="value" id="sb-date">—</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="icon">✅</div>
+          <div>
+            <div class="label">Status</div>
+            <div class="value" style="color:var(--green)">Active &amp; Verified</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+      <div class="qs-header">Quick Statistics</div>
+      <div class="qs-grid">
+        <div class="qs-item">
+          <div class="qs-value" id="qs-crops">—</div>
+          <div class="qs-label">Crops</div>
+        </div>
+        <div class="qs-item">
+          <div class="qs-value green" id="qs-revenue">—</div>
+          <div class="qs-label">Revenue</div>
+        </div>
+        <div class="qs-item">
+          <div class="qs-value saffron" id="qs-profit">—</div>
+          <div class="qs-label">Profit</div>
+        </div>
+        <div class="qs-item">
+          <div class="qs-value" id="qs-production">—</div>
+          <div class="qs-label">Prod (kg)</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content-col">
+
+    <!-- CROPS TABLE -->
+    <div class="section-block">
+      <div class="section-head">
+        <h2><span class="icon">🌾</span> Crop Records — Full Details</h2>
+        <span class="count-pill" id="crop-count-pill">Loading</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Crop Name</th>
+              <th>Seeding Date</th>
+              <th>Days Active</th>
+              <th>Land (Acres)</th>
+              <th>Production (kg)</th>
+              <th>Selling Price (₹/kg)</th>
+              <th>Revenue (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="crops-tbody">
+            <tr class="loading-row"><td colspan="8"><div class="spinner"></div><br>Fetching crop records…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- EXPENSE TABLE -->
+    <div class="section-block">
+      <div class="section-head">
+        <h2><span class="icon">💸</span> Expenditure Breakdown</h2>
+        <span class="count-pill" id="exp-count-pill">Loading</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Crop</th>
+              <th>Total Expenditure (₹)</th>
+              <th>Revenue (₹)</th>
+              <th>Net (₹)</th>
+              <th>Efficiency</th>
+            </tr>
+          </thead>
+          <tbody id="expense-tbody">
+            <tr class="loading-row"><td colspan="6"><div class="spinner"></div><br>Fetching expenditure data…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PROFIT SUMMARY -->
+    <div class="section-block">
+      <div class="section-head">
+        <h2><span class="icon">📊</span> Financial Summary</h2>
+      </div>
+      <div class="profit-grid" id="profit-grid">
+        <div class="profit-item crops">
+          <span class="profit-icon">🌾</span>
+          <div class="profit-val" id="ps-crops">—</div>
+          <div class="profit-lbl">Total Crops</div>
+        </div>
+        <div class="profit-item expense">
+          <span class="profit-icon">💸</span>
+          <div class="profit-val" id="ps-expense">—</div>
+          <div class="profit-lbl">Total Expense</div>
+        </div>
+        <div class="profit-item revenue">
+          <span class="profit-icon">💰</span>
+          <div class="profit-val" id="ps-revenue">—</div>
+          <div class="profit-lbl">Total Revenue</div>
+        </div>
+        <div class="profit-item profit">
+          <span class="profit-icon">📈</span>
+          <div class="profit-val" id="ps-profit">—</div>
+          <div class="profit-lbl">Net Profit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="section-block">
+      <div class="section-head">
+        <h2><span class="icon">📉</span> Production Growth — Crop-wise</h2>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-inner">
+          <canvas id="chart"></canvas>
+        </div>
+      </div>
+    </div>
+    <!-- GOVERNMENT SCHEMES -->
+<div class="section-block">
+  <div class="section-head">
+    <h2><span class="icon">🏛️</span> Government Scheme Benefits</h2>
+  </div>
+
+  <table class="gov-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Scheme Name</th>
+        <th>Status</th>
+        <th>Amount Received</th>
+      </tr>
+    </thead>
+    <tbody id="scheme-body">
+      <tr class="loading-row">
+        <td colspan="4">Loading schemes...</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
-<div class="card">
-<h3>Expenses</h3>
-<div id="expenses"></div>
+<!-- EXPERT CONNECTION -->
+<div class="section-block">
+  <div class="section-head">
+    <h2><span class="icon">👨‍🌾</span> Expert Support</h2>
+  </div>
+
+  <table class="gov-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Expert Name</th>
+        <th>Specialization</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="expert-body">
+      <tr class="loading-row">
+        <td colspan="4">Loading experts...</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
-<div class="card">
-<h3>Profit</h3>
-<p id="profit"></p>
-</div>
+  </div><!-- /content-col -->
+</div><!-- /main-wrap -->
 
-</div>
+<!-- FOOTER -->
+<footer class="gov-footer">
+  <div class="footer-inner">
+    <div class="copy">© 2024 Ministry of Agriculture &amp; Farmers' Welfare, Government of India. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+      <a href="#">Accessibility</a>
+      <a href="#">Contact Us</a>
+      <a href="#">Sitemap</a>
+    </div>
+  </div>
+</footer>
 
 <script>
-
 const params = new URLSearchParams(window.location.search);
-const userId = params.get("id");
-const name = params.get("name");
+const userId = params.get("id") || "N/A";
 
-// 🔥 PROFILE BUTTON
-function openProfile(){
-localStorage.setItem("viewFarmerId", userId);
-localStorage.setItem("viewFarmerName", name);
-window.location.href = "farmer-view.html";
+// Update ID references
+document.getElementById("gov-id-badge").textContent = `Farmer ID: ${userId}`;
+document.getElementById("sb-id").textContent = `ID: AGF-${String(userId).padStart(6,"0")}`;
+document.getElementById("sb-name").textContent = `Farmer #${userId}`;
+document.getElementById("page-subtitle").textContent = `Viewing detailed record for Farmer ID: AGF-${String(userId).padStart(6,"0")}`;
+document.getElementById("sb-date").textContent = new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+
+function daysBetween(date){
+  const d1 = new Date(date), d2 = new Date();
+  return Math.floor((d2-d1)/(1000*60*60*24));
 }
+function fmt(n){ return Number(n).toLocaleString("en-IN"); }
 
-// LOAD DATA
 async function loadData(){
 
-const profile = await fetch(
-`http://localhost:5000/api/users/farmer-profile/${userId}`
-).then(r=>r.json());
+  // ================= PROFILE =================
+  try {
+    const profile = await fetch(
+      `http://localhost:5000/api/users/farmer-profile/${userId}`
+    ).then(r=>r.json());
 
-document.getElementById("info").innerText =
-`Location: ${profile.location}, Soil: ${profile.soil_type}`;
+    if(profile.exists){
+      document.getElementById("sb-location").textContent = profile.location || "—";
+      document.getElementById("sb-soil").textContent    = profile.soil_type || "—";
+      document.getElementById("page-subtitle").textContent =
+        `${profile.location} · Soil: ${profile.soil_type} · ID: AGF-${String(userId).padStart(6,"0")}`;
+    }
+  } catch(e){}
 
-const crops = await fetch(
-`http://localhost:5000/api/users/get-crops/${userId}`
-).then(r=>r.json());
 
-let cropHtml="";
-let expenseHtml="";
+  // ================= FETCH DATA PARALLEL (FAST 🔥) =================
+  let crops = [];
+  let allExp = [];
 
-for(let c of crops){
+  try {
+    const [cropRes, expRes] = await Promise.all([
+      fetch(`http://localhost:5000/api/users/get-crops/${userId}`),
+      fetch(`http://localhost:5000/api/users/get-all-expenditures/${userId}`)
+    ]);
 
-let revenue = (c.quantity_produced||0)*(c.selling_price||0);
+    crops = await cropRes.json();
+    allExp = await expRes.json();
 
-cropHtml += `<p>${c.crop_name} | ${c.land_size} Acres | ₹${revenue}</p>`;
+  } catch(e){
+    console.log("Data fetch error", e);
+  }
 
-const exp = await fetch(
-`http://localhost:5000/api/users/get-expenditures/${c.id}`
-).then(r=>r.json());
 
-let total=0;
-exp.forEach(e=>total+=parseFloat(e.total_amount||0));
+  const labels = [], productionData = [], cropRevMap = {}, cropExpMap = {};
+  let cropRows = "", expRows = "", totalProd = 0;
 
-expenseHtml += `<p>${c.crop_name}: ₹${total}</p>`;
-}
+  const maxProd = Math.max(...crops.map(c=>c.quantity_produced||0), 1);
 
-document.getElementById("crops").innerHTML = cropHtml;
-document.getElementById("expenses").innerHTML = expenseHtml;
+  for(let i=0; i<crops.length; i++){
 
-// PROFIT
-const summary = await fetch(
-`http://localhost:5000/api/users/farmer-dashboard/${userId}`
-).then(r=>r.json());
+    const c = crops[i];
+    const rev = (c.quantity_produced||0)*(c.selling_price||0);
+    const days = daysBetween(c.seeding_date);
+    const pct  = Math.round(((c.quantity_produced||0)/maxProd)*100);
 
-document.getElementById("profit").innerText =
-`Profit: ₹ ${summary.profit}`;
+    labels.push(c.crop_name);
+    productionData.push(c.quantity_produced||0);
+    cropRevMap[c.id] = rev;
+    totalProd += (c.quantity_produced||0);
+
+    const emojiList = ["🌾","🌽","🍅","🥕","🧅","🥦","🌿","🍃"];
+    const emoji = emojiList[i % emojiList.length];
+
+    cropRows += `
+    <tr>
+      <td>${i+1}</td>
+      <td>${emoji} ${c.crop_name}</td>
+      <td>${new Date(c.seeding_date).toLocaleDateString()}</td>
+      <td>${days} days</td>
+      <td>${c.land_size}</td>
+      <td>${c.quantity_produced} kg</td>
+      <td>₹${fmt(c.selling_price)}</td>
+      <td>₹${fmt(rev)}</td>
+    </tr>`;
+
+    // ================= EXPENSE (OPTIMIZED 🔥) =================
+    const expList = allExp.filter(e => e.crop_id === c.id);
+
+    let expTotal = 0;
+    expList.forEach(e=>{
+      expTotal += parseFloat(e.total_amount || 0);
+    });
+
+    cropExpMap[c.id] = expTotal;
+
+    const net = rev - expTotal;
+
+    expRows += `
+    <tr>
+      <td>${i+1}</td>
+      <td>${c.crop_name}</td>
+      <td>₹${fmt(expTotal)}</td>
+      <td>₹${fmt(rev)}</td>
+      <td style="color:${net>=0?'green':'red'}">₹${fmt(net)}</td>
+    </tr>`;
+  }
+
+  // ================= TOTALS =================
+  const grandExp = Object.values(cropExpMap).reduce((a,b)=>a+b,0);
+  const grandRev = Object.values(cropRevMap).reduce((a,b)=>a+b,0);
+
+  expRows += `
+  <tr>
+    <td colspan="2"><b>Total</b></td>
+    <td>₹${fmt(grandExp)}</td>
+    <td>₹${fmt(grandRev)}</td>
+    <td>₹${fmt(grandRev-grandExp)}</td>
+  </tr>`;
+
+  document.getElementById("crops-tbody").innerHTML = cropRows;
+  document.getElementById("expense-tbody").innerHTML = expRows;
+
+
+  // ================= PROFIT =================
+  try {
+    const summary = await fetch(
+      `http://localhost:5000/api/users/farmer-dashboard/${userId}`
+    ).then(r=>r.json());
+
+    document.getElementById("ps-crops").textContent   = summary.totalCrops;
+    document.getElementById("ps-expense").textContent = "₹"+fmt(summary.totalExpense);
+    document.getElementById("ps-revenue").textContent = "₹"+fmt(summary.totalRevenue);
+    document.getElementById("ps-profit").textContent  = "₹"+fmt(summary.profit);
+
+  } catch(e){
+    document.getElementById("ps-crops").textContent   = crops.length;
+    document.getElementById("ps-expense").textContent = "₹"+fmt(grandExp);
+    document.getElementById("ps-revenue").textContent = "₹"+fmt(grandRev);
+    document.getElementById("ps-profit").textContent  = "₹"+fmt(grandRev-grandExp);
+  }
+
+  document.getElementById("qs-production").textContent = fmt(totalProd)+" kg";
+
+
+  // ================= SCHEMES =================
+  try {
+    const schemes = await fetch(
+      `http://localhost:5000/api/users/farmer-schemes/${userId}`
+    ).then(r=>r.json());
+
+    let html = "";
+
+    schemes.forEach((s,i)=>{
+      html += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${s.title}</td>
+        <td>${s.status || "Approved"}</td>
+        <td>₹${fmt(s.amount || 0)}</td>
+      </tr>`;
+    });
+
+    document.getElementById("scheme-body").innerHTML = html;
+
+  } catch(e){
+    document.getElementById("scheme-body").innerHTML =
+      `<tr><td colspan="4">No schemes data</td></tr>`;
+  }
+
+
+  // ================= EXPERTS =================
+  try {
+    const experts = await fetch(
+      `http://localhost:5000/api/users/farmer-experts/${userId}`
+    ).then(r=>r.json());
+
+    let html = "";
+
+    experts.forEach((e,i)=>{
+      html += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${e.name}</td>
+        <td>${e.specialization}</td>
+        <td>Connected</td>
+      </tr>`;
+    });
+
+    document.getElementById("expert-body").innerHTML = html;
+
+  } catch(e){
+    document.getElementById("expert-body").innerHTML =
+      `<tr><td colspan="4">No expert data</td></tr>`;
+  }
+
+
+  // ================= CHART =================
+  new Chart(document.getElementById("chart"),{
+    type:"bar",
+    data:{
+      labels:labels,
+      datasets:[{
+        label:"Production (kg)",
+        data:productionData
+      }]
+    }
+  });
 
 }
 
 loadData();
-
 </script>
-
 </body>
 </html>

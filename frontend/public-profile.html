@@ -96,89 +96,72 @@ alt="Public Photo">
 
 <script>
 
-// =======================
-// LOGIN CHECK
-// =======================
-
 const user = JSON.parse(localStorage.getItem("user"));
 
 if(!user){
-
-alert("Please login first");
-
-window.location.href="login.html";
-
+  alert("Please login first");
+  window.location.href="login.html";
 }
-
-
-// =======================
-// IMAGE PREVIEW
-// =======================
 
 function previewPhoto(){
+  const file=document.getElementById("photo").files[0];
+  const preview=document.getElementById("photoPreview");
 
-const file=document.getElementById("photo").files[0];
-const preview=document.getElementById("photoPreview");
-
-if(file){
-
-const reader=new FileReader();
-
-reader.onload=function(e){
-preview.src=e.target.result;
+  if(file){
+    const reader=new FileReader();
+    reader.onload=function(e){
+      preview.src=e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
 }
-
-reader.readAsDataURL(file);
-
-}
-
-}
-
-
-// =======================
-// SAVE PUBLIC PROFILE
-// =======================
 
 async function savePublicProfile(){
 
-const phone=document.getElementById("phone").value;
-const location=document.getElementById("location").value;
-const interests=document.getElementById("interests").value;
+  const phone=document.getElementById("phone").value;
+  const location=document.getElementById("location").value;
+  const interests=document.getElementById("interests").value;
 
-if(!phone || !location || !interests){
+  if(!phone || !location || !interests){
+    document.getElementById("message").innerText="Please fill all fields";
+    return;
+  }
 
-document.getElementById("message").innerText="Please fill all fields";
-return;
+  try {
 
-}
+    const res = await fetch("http://localhost:5000/api/users/public-profile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        phone,
+        location,
+        interests
+      })
+    });
 
-const res=await fetch(
-"http://localhost:5000/api/users/public-profile",
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-user_id:user.id,
-phone,
-location,
-interests
-})
-}
-);
+    // ✅ HANDLE ERROR SAFELY
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Server Error:", text);
+      document.getElementById("message").innerText = "Error saving profile";
+      return;
+    }
 
-const data=await res.json();
+    const data = await res.json();
 
-document.getElementById("message").innerText=data.message;
+    document.getElementById("message").innerText = data.message;
 
-if(res.ok){
+    setTimeout(()=>{
+      window.location.href="public-dashboard.html";
+    },1500);
 
-setTimeout(()=>{
-window.location.href="public-dashboard.html";
-},1500);
-
-}
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    document.getElementById("message").innerText = "Server not reachable";
+  }
 
 }
 

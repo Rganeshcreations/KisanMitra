@@ -105,6 +105,7 @@ const cropId=urlParams.get("crop_id");
 let cropData={};
 let expenses=[];
 
+// ================= TAB SWITCH =================
 function showTab(tab){
 
 document.querySelectorAll(".tabs button")
@@ -122,22 +123,30 @@ renderExpense();
 
 if(tab==="summary"){
 document.getElementById("summaryTab").classList.add("active");
-renderSummary();
+renderSummary(); // async safe now
 }
 
 }
 
+// ================= LOAD CROP =================
 async function loadCrop(){
 
-const res=await fetch(
+const res = await fetch(
 "http://localhost:5000/api/users/get-crop/"+cropId
 );
 
-cropData=await res.json();
+const data = await res.json();
+
+// 🔥 IMPORTANT FIX
+cropData = data;
+
+console.log("CROP DATA:", cropData);
+
 renderDetails();
 
 }
 
+// ================= LOAD EXPENSES =================
 async function loadExpenses(){
 
 const res=await fetch(
@@ -145,10 +154,12 @@ const res=await fetch(
 );
 
 expenses=await res.json();
-displayExpenses();
+
+return expenses;
 
 }
 
+// ================= DETAILS =================
 function renderDetails(){
 
 const today=new Date();
@@ -176,10 +187,12 @@ document.getElementById("contentArea").innerHTML=`
 <h4>Add Production Details</h4>
 
 <input type="number" id="quantity"
-placeholder="Quantity Produced">
+placeholder="Quantity Produced"
+value="${cropData.quantity_produced || ''}">
 
 <input type="number" id="price"
-placeholder="Selling Price per unit">
+placeholder="Selling Price per unit"
+value="${cropData.selling_price || ''}">
 
 <button class="action-btn"
 onclick="updateProduction()">Save</button>
@@ -188,13 +201,11 @@ onclick="updateProduction()">Save</button>
 
 }
 
+// ================= UPDATE PRODUCTION =================
 async function updateProduction(){
 
-const quantity=
-document.getElementById("quantity").value;
-
-const price=
-document.getElementById("price").value;
+const quantity=document.getElementById("quantity").value;
+const price=document.getElementById("price").value;
 
 await fetch(
 "http://localhost:5000/api/users/update-production/"+cropId,
@@ -208,10 +219,15 @@ selling_price:price
 }
 );
 
-alert("Production Updated");
+// 🔥 RELOAD DATA
+await loadCrop();
+await loadExpenses();
+
+alert("Production Updated Successfully");
 
 }
 
+// ================= EXPENSE TAB =================
 function renderExpense(){
 
 document.getElementById("contentArea").innerHTML=`
@@ -239,10 +255,11 @@ onclick="addExpense()">Add Expense</button>
 
 `;
 
-loadExpenses();
+loadExpenses().then(displayExpenses);
 
 }
 
+// ================= ADD EXPENSE =================
 async function addExpense(){
 
 const type=document.getElementById("expenseType").value;
@@ -265,10 +282,12 @@ expense_date:date
 }
 );
 
-loadExpenses();
+await loadExpenses();
+displayExpenses();
 
 }
 
+// ================= DISPLAY EXPENSE =================
 function displayExpenses(){
 
 const list=document.getElementById("expenseList");
@@ -297,32 +316,59 @@ list.innerHTML+=`
 
 }
 
-function renderSummary(){
+// ================= SUMMARY (FIXED 🔥) =================
+async function renderSummary(){
 
-let totalExpense=expenses.reduce(
-(sum,e)=>sum+parseFloat(e.total_amount),0
-);
+// 🔥 1. Load latest expenses
+await loadExpenses();
 
-let revenue=
-(cropData.quantity_produced||0)*
-(cropData.selling_price||0);
+let totalExpense = 0;
 
-let profit=revenue-totalExpense;
+expenses.forEach(e=>{
+  totalExpense += Number(e.total_amount) || 0;
+});
 
+
+// 🔥 2. Safe conversion (VERY IMPORTANT)
+let quantity = Number(cropData.quantity_produced);
+let price = Number(cropData.selling_price);
+
+// Handle invalid values
+if(isNaN(quantity)) quantity = 0;
+if(isNaN(price)) price = 0;
+
+
+// 🔥 3. Correct calculation
+let revenue = quantity * price;
+let profit = revenue - totalExpense;
+
+
+// 🔥 4. DEBUG (remove later)
+console.log("Quantity:", quantity);
+console.log("Price:", price);
+console.log("Revenue:", revenue);
+console.log("Expense:", totalExpense);
+console.log("Profit:", profit);
+
+
+// 🔥 5. UI update
 document.getElementById("contentArea").innerHTML=`
 
 <h3>📊 Financial Summary</h3>
 
-<p>💰 Total Expense: ₹ ${totalExpense}</p>
+<p>💰 Total Expense: ₹ ${totalExpense.toFixed(2)}</p>
 
-<p>📈 Revenue: ₹ ${revenue}</p>
+<p>📈 Revenue: ₹ ${revenue.toFixed(2)}</p>
 
-<h2>${profit>=0?"Profit":"Loss"}: ₹ ${profit}</h2>
+<h2 style="color:${profit>=0?'#4CAF50':'red'}">
+${profit>=0?"Profit":"Loss"}: ₹ ${profit.toFixed(2)}
+</h2>
 
 `;
 
 }
 
+// INIT
 loadCrop();
 
 </script>

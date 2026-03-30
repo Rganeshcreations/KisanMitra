@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>My Public Profile</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background: linear-gradient(rgba(0,100,0,0.7), rgba(0,0,0,0.8)),
+url("images/farmer-bg.jpg");
+background-size: cover;
+color:white;
+}
+
+.container{
+display:flex;
+padding:40px;
+}
+
+.left{
+width:300px;
+background:rgba(0,0,0,0.7);
+padding:20px;
+border-radius:15px;
+text-align:center;
+}
+
+.left img{
+width:150px;
+height:150px;
+border-radius:50%;
+border:4px solid white;
+}
+
+.right{
+flex:1;
+margin-left:40px;
+background:rgba(255,255,255,0.15);
+padding:30px;
+border-radius:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="left">
+<img id="profileImage" src="images/ganesh.jpg">
+<h2 id="name"></h2>
+<p id="location"></p>
+</div>
+
+<div class="right">
+<h1>🌾 Public Profile</h1>
+
+<p><b>Phone:</b> <span id="phone"></span></p>
+<p><b>Location:</b> <span id="loc"></span></p>
+<p><b>Interests:</b> <span id="interests"></span></p>
+
+</div>
+
+</div>
+
+<script>
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+async function loadProfile(){
+
+  try {
+
+    const res = await fetch(
+      `http://localhost:5000/api/users/public-profile/${user.id}`
+    );
+
+    const data = await res.json();
+
+    document.getElementById("name").innerText = user.name || "User";
+    document.getElementById("phone").innerText = data.phone;
+    document.getElementById("loc").innerText = data.location;
+    document.getElementById("interests").innerText = data.interests;
+    document.getElementById("location").innerText = data.location;
+
+  } catch (err) {
+    console.log(err);
+    alert("Failed to load profile");
+  }
+
+}
+
+loadProfile();
+
+</script>
+
+</body>
+</html>

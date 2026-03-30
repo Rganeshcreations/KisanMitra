@@ -282,7 +282,7 @@ res.json({message:"Crop added successfully"});
 
 });
 // =================================
-// GET SINGLE CROP
+// GET SINGLE CROP (FINAL FIX)
 // =================================
 router.get("/get-crop/:crop_id",(req,res)=>{
 
@@ -293,6 +293,7 @@ const sql = "SELECT * FROM crops WHERE id=?";
 db.query(sql,[cropId],(err,result)=>{
 
 if(err){
+console.log("❌ DB error:",err);
 return res.status(500).json({message:"Database error"});
 }
 
@@ -307,8 +308,10 @@ res.json(result[0]);
 });
 
 
+
+
 // =================================
-// UPDATE PRODUCTION (Quantity + Price)
+// UPDATE PRODUCTION (CORRECT FIX)
 // =================================
 router.put("/update-production/:crop_id",(req,res)=>{
 
@@ -324,8 +327,11 @@ WHERE id=?
 db.query(sql,[quantity_produced,selling_price,cropId],(err)=>{
 
 if(err){
+console.log("❌ Update error:", err);
 return res.status(500).json({message:"Update failed"});
 }
+
+console.log("✅ Production updated:", cropId);
 
 res.json({message:"Production updated successfully"});
 
@@ -512,6 +518,58 @@ return res.status(500).json({message:"Database error"});
 res.json(result);
 
 });
+
+});
+// ======================================================
+// public PROFILE
+router.post("/public-profile", (req, res) => {
+
+  const { user_id, phone, location, interests } = req.body;
+
+  console.log("Incoming Data:", user_id, phone, location, interests);
+
+  if (!user_id || !phone || !location || !interests) {
+    return res.status(400).json({ message: "All fields required" });
+  }
+
+  const sql = `
+    INSERT INTO public_profiles (user_id, phone, location, interests)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.query(sql, [user_id, phone, location, interests], (err, result) => {
+
+    if (err) {
+      console.error("❌ DB Error:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    console.log("✅ Profile inserted, ID:", result.insertId);
+
+    res.json({ message: "Profile saved successfully" });
+
+  });
+
+});
+// ======================================================
+// get public PROFILE
+// ======================================================
+router.get("/public-profile/:id", (req, res) => {
+
+  const userId = req.params.id;
+
+  const sql = "SELECT * FROM public_profiles WHERE user_id = ?";
+
+  db.query(sql, [userId], (err, result) => {
+
+    if (err) return res.status(500).json({ message: "DB error" });
+
+    if (result.length === 0)
+      return res.status(404).json({ message: "Profile not found" });
+
+    res.json(result[0]);
+
+  });
 
 });
 

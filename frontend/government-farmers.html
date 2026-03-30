@@ -1,89 +1,212 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Government Farmers</title>
+<title>Government Farmers - KisanMitra</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
+
+/* ================= BASE ================= */
 body{
 margin:0;
-font-family:Arial;
-background:#f4f6f9;
+font-family:'Poppins',sans-serif;
+background:#eef2f7;
 }
 
+/* ================= HEADER ================= */
+.header{
+background:#0a2a5e;
+color:white;
+padding:15px 30px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.header h1{
+margin:0;
+font-size:20px;
+}
+
+.header span{
+font-size:13px;
+opacity:0.8;
+}
+
+/* ================= SIDEBAR ================= */
 .sidebar{
 width:240px;
 height:100vh;
 background:#1f2d3d;
 position:fixed;
+top:60px;
 color:white;
 padding-top:20px;
 }
 
 .sidebar h2{
 text-align:center;
-margin-bottom:20px;
+margin-bottom:25px;
+font-weight:600;
 }
 
 .sidebar button{
-width:90%;
-margin:10px;
+width:85%;
+margin:10px auto;
+display:block;
 padding:12px;
 border:none;
 background:#34495e;
 color:white;
+border-radius:8px;
 cursor:pointer;
-border-radius:6px;
+transition:0.3s;
 }
 
+.sidebar button:hover{
+background:#27ae60;
+}
+
+/* ================= MAIN ================= */
 .main{
-margin-left:250px;
+margin-left:240px;
+margin-top:60px;
 padding:30px;
+}
+
+.main h2{
+margin-bottom:20px;
+}
+
+/* ================= TABLE ================= */
+.table-box{
+background:white;
+border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,0.08);
+overflow:hidden;
 }
 
 table{
 width:100%;
-background:white;
 border-collapse:collapse;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
-
-th,td{
-padding:12px;
-border-bottom:1px solid #eee;
 }
 
 th{
 background:#2e7d32;
 color:white;
+font-size:13px;
+text-transform:uppercase;
+letter-spacing:0.5px;
 }
 
+th,td{
+padding:14px;
+text-align:left;
+}
+
+tr{
+border-bottom:1px solid #eee;
+}
+
+tr:hover{
+background:#f1f7ff;
+}
+
+/* ================= AVATAR ================= */
+.user-cell{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.avatar{
+width:35px;
+height:35px;
+border-radius:50%;
+background:#2e7d32;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+}
+
+/* ================= BUTTON ================= */
 .view-btn{
 background:#1976d2;
 color:white;
 border:none;
-padding:6px 12px;
-border-radius:5px;
+padding:6px 14px;
+border-radius:20px;
 cursor:pointer;
+transition:0.3s;
 }
+
+.view-btn:hover{
+background:#0d47a1;
+}
+
+/* ================= SEARCH ================= */
+.search-box{
+margin-bottom:20px;
+display:flex;
+justify-content:space-between;
+}
+
+.search-box input{
+padding:10px;
+width:250px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* ================= FOOTER ================= */
+.footer{
+text-align:center;
+padding:15px;
+margin-top:30px;
+font-size:12px;
+color:#777;
+}
+
 </style>
 
 </head>
 
 <body>
 
+<!-- HEADER -->
+<div class="header">
+<h1>Government of India - Agriculture Department</h1>
+<span>Farmer Monitoring System</span>
+</div>
+
+<!-- SIDEBAR -->
 <div class="sidebar">
-<h2>Government Panel</h2>
+<h2>KisanMitra</h2>
+
 <button onclick="location.href='government-dashboard.html'">Dashboard</button>
 <button onclick="location.href='government-farmers.html'">Farmers</button>
 <button onclick="location.href='government-experts.html'">Experts</button>
 <button onclick="logout()">Logout</button>
+
 </div>
 
+<!-- MAIN -->
 <div class="main">
 
 <h2>Farmer Monitoring</h2>
 
+<div class="search-box">
+<input type="text" id="search" placeholder="Search farmer..." onkeyup="filterTable()">
+</div>
+
+<div class="table-box">
+
 <table>
+
 <thead>
 <tr>
 <th>Name</th>
@@ -94,43 +217,99 @@ cursor:pointer;
 </thead>
 
 <tbody id="farmersTable"></tbody>
+
 </table>
+
+</div>
+
+<div class="footer">
+© Government of India | Digital Agriculture Mission
+</div>
 
 </div>
 
 <script>
 
+let allFarmers=[];
+
+// ================= LOAD FARMERS =================
 async function loadFarmers(){
+
+try{
+
 const res = await fetch("http://localhost:5000/api/admin/farmers");
 const farmers = await res.json();
+
+allFarmers = farmers;
+
+renderTable(farmers);
+
+}catch(err){
+console.log(err);
+}
+
+}
+
+// ================= RENDER TABLE =================
+function renderTable(farmers){
 
 let html="";
 
 farmers.forEach(f=>{
+
 html+=`
 <tr>
-<td>${f.name}</td>
-<td>${f.email}</td>
-<td>${f.location || "-"}</td>
 <td>
-<button class="view-btn" onclick="viewFarmer(${f.id})">View</button>
+<div class="user-cell">
+<div class="avatar">${f.name.charAt(0)}</div>
+${f.name}
+</div>
+</td>
+
+<td>${f.email}</td>
+
+<td>${f.location || "Not Available"}</td>
+
+<td>
+<button class="view-btn" onclick="viewFarmer(${f.id})">
+View
+</button>
 </td>
 </tr>
 `;
+
 });
 
 document.getElementById("farmersTable").innerHTML = html;
+
 }
 
+// ================= SEARCH =================
+function filterTable(){
+
+const text = document.getElementById("search").value.toLowerCase();
+
+const filtered = allFarmers.filter(f =>
+f.name.toLowerCase().includes(text) ||
+f.email.toLowerCase().includes(text)
+);
+
+renderTable(filtered);
+
+}
+
+// ================= VIEW =================
 function viewFarmer(id){
 window.location.href = `government-farmer-view.html?id=${id}`;
 }
 
+// ================= LOGOUT =================
 function logout(){
 localStorage.clear();
 window.location.href="login.html";
 }
 
+// INIT
 loadFarmers();
 
 </script>

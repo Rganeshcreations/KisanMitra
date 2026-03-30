@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Government Experts</title>
+<title>Government Experts - KisanMitra</title>
 
 <style>
 body{
@@ -10,6 +10,7 @@ font-family:Arial;
 background:#f4f6f9;
 }
 
+/* SIDEBAR */
 .sidebar{
 width:240px;
 height:100vh;
@@ -17,6 +18,11 @@ background:#1f2d3d;
 position:fixed;
 color:white;
 padding-top:20px;
+}
+
+.sidebar h2{
+text-align:center;
+margin-bottom:20px;
 }
 
 .sidebar button{
@@ -28,23 +34,37 @@ background:#34495e;
 color:white;
 cursor:pointer;
 border-radius:6px;
+font-size:14px;
 }
 
+.sidebar button:hover{
+background:#27ae60;
+}
+
+/* MAIN */
 .main{
 margin-left:250px;
 padding:30px;
 }
 
+h2{
+margin-bottom:20px;
+}
+
+/* TABLE */
 table{
 width:100%;
 background:white;
 border-collapse:collapse;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
+border-radius:10px;
+overflow:hidden;
 }
 
 th,td{
 padding:12px;
 border-bottom:1px solid #eee;
+text-align:left;
 }
 
 th{
@@ -52,6 +72,7 @@ background:#2e7d32;
 color:white;
 }
 
+/* BUTTON */
 .view-btn{
 background:#1976d2;
 color:white;
@@ -60,25 +81,35 @@ padding:6px 12px;
 border-radius:5px;
 cursor:pointer;
 }
+
+.view-btn:hover{
+background:#0d47a1;
+}
+
 </style>
 
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
 <h2>Government Panel</h2>
+
 <button onclick="location.href='government-dashboard.html'">Dashboard</button>
 <button onclick="location.href='government-farmers.html'">Farmers</button>
 <button onclick="location.href='government-experts.html'">Experts</button>
+
 <button onclick="logout()">Logout</button>
 </div>
 
+<!-- MAIN -->
 <div class="main">
 
-<h2>Experts</h2>
+<h2>👨‍🌾 Experts Monitoring</h2>
 
 <table>
+
 <thead>
 <tr>
 <th>Name</th>
@@ -89,43 +120,76 @@ cursor:pointer;
 </thead>
 
 <tbody id="expertsTable"></tbody>
+
 </table>
 
 </div>
 
 <script>
 
+// =======================
+// LOAD EXPERTS
+// =======================
+
 async function loadExperts(){
+
+try{
+
 const res = await fetch("http://localhost:5000/api/admin/experts");
 const experts = await res.json();
 
 let html="";
 
 experts.forEach(e=>{
+
 html+=`
 <tr>
 <td>${e.name}</td>
 <td>${e.email}</td>
 <td>${e.specialization || "-"}</td>
 <td>
-<button class="view-btn" onclick="viewExpert(${e.id})">View</button>
+<button class="view-btn" onclick="viewExpert(${e.id}, '${e.name}')">
+View
+</button>
 </td>
 </tr>
 `;
+
 });
 
 document.getElementById("expertsTable").innerHTML = html;
+
+}catch(err){
+console.log("Error loading experts:", err);
 }
 
-function viewExpert(id){
-window.location.href = `government-expert-view.html?id=${id}`;
 }
+
+
+// =======================
+// VIEW EXPERT (IMPORTANT FIX)
+// =======================
+
+function viewExpert(id,name){
+
+// pass both id + name
+window.location.href =
+`government-expert-view.html?id=${id}&name=${encodeURIComponent(name)}`;
+
+}
+
+
+// =======================
+// LOGOUT
+// =======================
 
 function logout(){
 localStorage.clear();
 window.location.href="login.html";
 }
 
+
+// LOAD DATA
 loadExperts();
 
 </script>
